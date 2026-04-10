@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "test": "jest --coverage"
+    "test": "npx jest --coverage"
   },
   "devDependencies": {
     "jest": "^30.3.0"
