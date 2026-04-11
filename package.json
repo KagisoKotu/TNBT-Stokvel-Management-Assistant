@@ -1,5 +1,5 @@
-{
-  "scripts": {
+{   "scripts": {
+    "start": "node index.js",
     "test": "npx jest --coverage"
   },
   "devDependencies": {
