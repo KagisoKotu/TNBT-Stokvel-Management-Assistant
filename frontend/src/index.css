@@ -1,0 +1,36 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+    themes: stokvel, mytheme, "coffee";
+}
+
+/* This tells Tailwind v4 to look at all your files */
+@source "./**/*.{js,jsx,ts,tsx,html}";
+
+/* Optional: If you want to force specific themes to be available */
+@config "../tailwind.config.js";
+
+[data-theme="mytheme"] {
+  --color-primary: #1d4ed8;    /* A strong "Trust" Blue */
+  --color-secondary: #ffffff;  /* Pure White */
+  --color-accent: #facc15;     /* The "Design Idea" Yellow */
+  --color-base-100: #ffffff;   /* Main background color (White) */
+  --color-base-content: #1e293b; /* Dark text for readability */
+}
+
+[data-theme="stokvel"] {
+  /* The Blues (Trust & Professionalism) */
+  --color-primary: #1e40af;       /* Deep Navy Blue */
+  --color-primary-content: #ffffff; /* White text on blue buttons */
+  
+  /* The Yellows (Action & Energy) */
+  --color-accent: #fbbf24;        /* Warm Gold/Yellow */
+  --color-accent-content: #1e293b;  /* Dark text on yellow buttons */
+
+  /* The "Blending" Backgrounds (Cleanliness) */
+  --color-base-100: #ffffff;      /* Main Page Background (White) */
+  --color-base-200: #f8fafc;      /* Slightly grey for card backgrounds */
+  --color-base-300: #f1f5f9;      /* Borders and dividers */
+  
+  /* The Text */
+  --color-base-content: #0f172a;  /* Very dark blue/black for text */
+}
