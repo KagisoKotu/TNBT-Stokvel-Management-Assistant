@@ -1,9 +1,18 @@
+/* Resetting fieldset and legend defaults */
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
 .form-bg {
   background-color: #fafafa;
   min-height: 100vh;
   padding: 20px 0 60px 0;
+  font-family: sans-serif;
 }
 
+/* Header Navigation */
 .create-header-nav {
   display: flex;
   justify-content: space-between;
@@ -17,8 +26,22 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
 .header-spacer {
   width: 24px;
+}
+
+/* Form Container */
+.form-container {
+  padding: 0 20px;
 }
 
 .semantic-form {
@@ -30,12 +53,14 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
 }
 
+/* Form Sections (replacing the old fieldset look) */
 .form-section {
   border: 1.5px solid #f2f2f2;
   border-radius: 20px;
   padding: 30px;
   margin-bottom: 35px;
   position: relative;
+  display: block; /* Ensures it acts as a container */
 }
 
 .form-section legend {
@@ -48,23 +73,27 @@
   font-weight: 800;
   text-transform: uppercase;
   font-size: 0.9rem;
+  width: auto;
 }
 
+/* Grid Layouts for Rows */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 25px;
+  margin: 0; /* Resetting default section margins */
 }
 
 .triple-col {
   grid-template-columns: 1fr 1fr 1.5fr !important;
 }
 
+/* Input Groups (Now using <p> tags) */
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 15px;
+  gap: 6px;
+  margin: 0 0 15px 0; /* Removing default <p> margins */
 }
 
 .input-group label {
@@ -79,18 +108,57 @@
   border: 2px solid #f4f4f4;
   border-radius: 12px;
   font-size: 1rem;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box; /* Crucial for width alignment */
 }
 
+.input-group input:focus {
+  outline: none;
+  border-color: #714b9d;
+}
+
+/* Invitation Note (<small> tag) */
+.section-note {
+  display: block;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+/* Member Entry Row Styling */
+.member-entry {
+  padding-top: 15px;
+  border-top: 1px solid #f9f9f9;
+}
+
+/* Input with Action button (<section> tag) */
 .input-with-action {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
 }
 
 .input-with-action input {
   flex: 1;
 }
 
+/* Error States (<small> tag) */
+.input-error {
+  border-color: #ff4d4d !important;
+  background-color: #fff8f8;
+}
+
+.error-text {
+  color: #ff4d4d;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Buttons */
 .add-row-btn {
   background: none;
   border: 2px dashed #714b9d;
@@ -100,15 +168,23 @@
   border-radius: 12px;
   font-weight: 700;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .remove-row-btn {
   background: #fff0f0;
   color: #ff4d4d;
   border: none;
-  padding: 10px;
+  padding: 12px;
   border-radius: 10px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .submit-full {
@@ -118,7 +194,32 @@
   padding: 18px;
   border-radius: 16px;
   font-weight: 800;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   border: none;
   cursor: pointer;
+  transition: transform 0.1s, background 0.2s;
+  margin-top: 10px;
+}
+
+.submit-full:hover {
+  background-color: #5d3d82;
+}
+
+.submit-full:active {
+  transform: scale(0.98);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-row, .triple-col {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+  .semantic-form {
+    padding: 25px;
+  }
+  .create-header-nav {
+    margin: 10px;
+    padding: 10px 20px;
+  }
 }
