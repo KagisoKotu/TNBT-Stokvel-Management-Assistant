@@ -5,6 +5,9 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 const express = require('express');
 const mongoose = require('mongoose');
 const stokvelRoutes = require('./routes/stokvelRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const authRoutes = require('./routes/authRoutes');
+const usersRoutes = require('./routes/usersRoutes');
 
 const User = require('./models/User');
 const Group = require('./models/Group');
@@ -32,11 +35,14 @@ app.get('/', (req, res) => {
   res.json({
     status: 'ok',
     message: 'TNBT Stokvel Management Assistant API',
-    routes: ['/api/stokvel']
+    routes: ['/api/stokvel', '/api/auth', '/api/users']
   });
 });
 
 app.use('/api/stokvel', stokvelRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
