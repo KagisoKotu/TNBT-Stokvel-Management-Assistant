@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 @plugin "daisyui" {
     themes: stokvel, mytheme, "coffee";
@@ -34,3 +35,18 @@
   /* The Text */
   --color-base-content: #0f172a;  /* Very dark blue/black for text */
 }
+=======
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+>>>>>>> e64a479a719e0009c4cdd7bad508a4dce55cdeb5
