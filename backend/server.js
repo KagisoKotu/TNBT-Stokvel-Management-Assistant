@@ -39,6 +39,10 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/', (req, res) => {
+    res.send('Stokvel Assistant API is running!');
+});
+
 app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
