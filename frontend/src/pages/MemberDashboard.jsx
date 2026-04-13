@@ -46,7 +46,6 @@ const MemberDashboard = ({ user, onLogout }) => {
   
   return (
     <section className="dashboard">
-      {/* Sidebar */}
       <aside className="sidebar">
         <header className="logo">
           <section className="logo-icon">SS</section>
@@ -73,7 +72,6 @@ const MemberDashboard = ({ user, onLogout }) => {
         </nav>
       </aside>
       
-      {/* Main Content */}
       <main className="main-content">
         <header className="header">
           <section className="header-title">
@@ -88,13 +86,11 @@ const MemberDashboard = ({ user, onLogout }) => {
           </section>
         </header>
         
-        {/* Group Info */}
         <section className="group-info">
           <h2>{dashboardData.groupName}</h2>
           <p>{dashboardData.groupDescription}</p>
         </section>
         
-        {/* Stats Cards */}
         <section className="stats-grid">
           <article className="stat-card">
             <h3 className="stat-title">Total Contributed</h3>
@@ -110,7 +106,6 @@ const MemberDashboard = ({ user, onLogout }) => {
           </article>
         </section>
         
-        {/* Personal Information */}
         <section className="table-wrapper personal-info-wrapper">
           <h3>Personal Information</h3>
           <section className="personal-info">
@@ -122,7 +117,6 @@ const MemberDashboard = ({ user, onLogout }) => {
           </section>
         </section>
         
-        {/* Contribution History */}
         <section className="contribution-list">
           <h3>Contribution History</h3>
           
@@ -150,7 +144,6 @@ const MemberDashboard = ({ user, onLogout }) => {
           </section>
         </section>
         
-        {/* Action Buttons */}
         <section className="action-buttons">
           <button className="btn-primary" type="button">
             Make Contribution
