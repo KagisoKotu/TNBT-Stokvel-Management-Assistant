@@ -24,5 +24,4 @@ const requireRole = (...allowedRoles) => {
     };
 };
 
-// exporting them!
 module.exports = { verifyToken, requireRole };
