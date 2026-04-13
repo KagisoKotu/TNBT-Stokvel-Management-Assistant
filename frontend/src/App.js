@@ -13,6 +13,7 @@ function App() {
       <main className="app-root">
         <Routes>
           <Route path="/" element={<Login />} />
+<<<<<<< HEAD
           
           <Route 
             path="/home" 
@@ -22,6 +23,9 @@ function App() {
               </ProtectedRoute>
             } 
           />
+=======
+          <Route path="/home" element={<Home />} />
+>>>>>>> 639d93be84d9fac038ab24959affbea55184070d
           
           {/* 2. Define the path for your Create Group form */}
           <Route 

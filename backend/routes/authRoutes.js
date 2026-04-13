@@ -1,31 +1,46 @@
 const express = require('express');
 const router = express.Router();
+const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
-// Placeholder for future middleware
-// const { verifyToken } = require('../middleware/authMiddleware');
 
-// Route: POST /api/auth/google
-// Description: Handle Google login/registration
-// Access: Public
-router.post('/google', (req, res) => {
-  const { token } = req.body;
+router.post('/google-login', async (req, res) => {
+    try {
+        const { email, name, picture } = req.body;
 
-  // TODO for Backend Dev 2:
-  // 1. Verify the Google token using 'google-auth-library'
-  // 2. Check if the user's Google ID exists in your MongoDB database
-  // 3. If they are new, create a new User document (leave role blank or 'pending')
-  // 4. Generate your own JSON Web Token (JWT)
-  // 5. Send the JWT and user data back to the frontend
-  res.status(200).json({ message: 'Google Auth endpoint hit successfully. Token verification pending.' });
-});
+        // Check if user exists, otherwise create them
+        let user = await User.findOne({ email });
 
-// Route: POST /api/auth/logout
-// Description: Logout user and clear session
-// Access: Private
-router.post('/logout', (req, res) => {
-  // In JWT-based auth, logging out is usually handled by the frontend deleting the token.
-  // However, this endpoint can be used for refresh token or cookie cleanup if needed.
-  res.status(200).json({ message: 'Logged out successfully.' });
+        if (!user) {
+            user = await User.create({
+                email,
+                name,
+                picture,
+                role: 'Member' // New users start as members
+            });
+        }
+
+        // Create JWT token using the JWT_SECRET 
+        const token = jwt.sign(
+            { id: user._id, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+
+        // Send back the token and user details
+        res.status(200).json({
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error("Auth Error:", error);
+        res.status(500).json({ message: "Internal Server Error during auth" });
+    }
 });
 
 module.exports = router;

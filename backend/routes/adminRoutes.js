@@ -1,19 +1,17 @@
 const express = require('express');
 const router = express.Router();
 
-// Placeholder for Developer 2's middleware
-// const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
+const { verifyToken, requireRole } = require('../middleware/authMiddleware');
 
-// Route: GET /api/admin/dashboard
-// Later, you will add the middleware here: router.get('/dashboard', verifyToken, verifyAdmin, ...);
-router.get('/dashboard', (req, res) => {
+// checks if logged in, requireRole checks if they are an Admin
+router.get('/dashboard', verifyToken, requireRole('admin'), (req, res) => {
   res.status(200).json({ message: 'Welcome to the Admin Dashboard' });
 });
 
 // Route: POST /api/admin/manage-users
-router.post('/manage-users', (req, res) => {
-  // Logic to manage users
-  res.status(200).json({ message: 'User management endpoint hit' });
+router.post('/manage-users', verifyToken, requireRole('admin'), (req, res) => {
+  // Logic for the Stokvel admin to manage members
+  res.status(200).json({ message: 'User management endpoint accessed' });
 });
 
 module.exports = router;
