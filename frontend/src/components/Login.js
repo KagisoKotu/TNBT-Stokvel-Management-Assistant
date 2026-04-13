@@ -9,23 +9,47 @@ export const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSuccess = (credentialResponse) => {
+ 
+
+  const handleSuccess = async (credentialResponse) => {
     setLoading(true);
     setError('');
+    
     try {
+      // 1. Extract details for the Frontend (UI)
       const clientDetails = jwtDecode(credentialResponse.credential);
-      const email = clientDetails.email;
-      const name = clientDetails.given_name;
-      const surname = clientDetails.family_name;
-      const fullName = clientDetails.name;
-      const picture = clientDetails.picture;
+      
+      // 2. The Handshake: Send to Backend
+      const response = await fetch('http://localhost:5000/api/auth/google-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          token: credentialResponse.credential 
+        }),
+      });
 
-      // store user info (recommended to use context/redux in a real app? - idk we'll see)
-      sessionStorage.setItem('user', JSON.stringify({ email, name, surname, fullName, picture }));
+      const data = await response.json();
 
-      navigate('/home', { replace: true });
+      if (response.ok && data.token) {
+        // 3. Store the Backend Session (JWT)
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role);
+        
+        // 4. Store user info for the UI (Name, Picture, etc.)
+        sessionStorage.setItem('user', JSON.stringify({
+          email: clientDetails.email,
+          name: clientDetails.given_name,
+          fullName: clientDetails.name,
+          picture: clientDetails.picture
+        }));
+
+        navigate('/home', { replace: true });
+      } else {
+        throw new Error(data.message || 'Server rejected login');
+      }
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      console.error("Login Error:", err);
+      setError('Connection to server failed. Please try again.');
       setLoading(false);
     }
   };
