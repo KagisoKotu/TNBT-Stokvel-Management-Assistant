@@ -7,8 +7,8 @@ const UserSchema = new mongoose.Schema({
     picture: { type: String },
     role: { 
         type: String, 
-        enum: ['Member', 'Treasurer', 'Admin'], 
-        default: 'Member' 
+        enum: ['member', 'treasurer', 'admin'], 
+        default: 'member' 
     },
     createdAt: { type: Date, default: Date.now }
 });
