@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap');
+
+/* ─── Reset & base ───────────────────────────────────────────────────────── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── CSS Variables ──────────────────────────────────────────────────────── */
+:root {
+  --blue:        #1A3A6B;
+  --blue-mid:    #2563C8;
+  --blue-light:  #EBF2FF;
+  --yellow:      #F5C842;
+  --white:       #FFFFFF;
+}
+
+/* ─── Page layout ────────────────────────────────────────────────────────── */
+.login-page {
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: var(--blue-light);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ─── Background decorations ─────────────────────────────────────────────── */
+.login-bg-circle1 {
+  position: absolute;
+  top: -120px;
+  left: -120px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: rgba(37, 99, 200, 0.08);
+  pointer-events: none;
+}
+
+.login-bg-circle2 {
+  position: absolute;
+  bottom: -80px;
+  right: 45%;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(245, 200, 66, 0.12);
+  pointer-events: none;
+}
+
+.login-bg-stripe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 48%;
+  background: var(--blue);
+  clip-path: polygon(6% 0, 100% 0, 100% 100%, 0% 100%);
+  pointer-events: none;
+}
+
+/* ─── Login card ─────────────────────────────────────────────────────────── */
+.login-card {
+  position: relative;
+  z-index: 2;
+  background: var(--white);
+  width: 100%;
+  max-width: 440px;
+  margin: auto;
+  margin-left: 6vw;
+  padding: 48px 44px 40px;
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(26, 58, 107, 0.14);
+  align-self: center;
+  animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ─── Logo / branding ────────────────────────────────────────────────────── */
+.login-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+
+.login-logo-mark {
+  line-height: 0;
+}
+
+.login-logo-text {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--blue);
+  letter-spacing: -0.3px;
+}
+
+/* ─── Headline & subtext ─────────────────────────────────────────────────── */
+.login-headline {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  font-size: 30px;
+  color: var(--blue);
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+
+.login-sub {
+  font-size: 14.5px;
+  color: #4B6080;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+/* ─── Divider ────────────────────────────────────────────────────────────── */
+.login-divider {
+  height: 1px;
+  background: #E2ECF8;
+  border: none;
+  margin-bottom: 28px;
+}
+
+/* ─── Google sign-in section ─────────────────────────────────────────────── */
+.login-google-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.login-loading-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid #D0DEF5;
+  color: var(--blue-mid);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--blue-light);
+  border-top: 2px solid var(--blue-mid);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ─── Error message ──────────────────────────────────────────────────────── */
+.login-error {
+  text-align: center;
+  color: #C0392B;
+  font-size: 13px;
+  margin-bottom: 12px;
+  background: #FEF0EE;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+/* ─── Fine print & links ─────────────────────────────────────────────────── */
+.login-fine-print {
+  font-size: 12px;
+  color: #7A93B0;
+  text-align: center;
+  line-height: 1.6;
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+.login-fine-print a {
+  color: var(--blue-mid);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+/* ─── Trust badge (card footer) ──────────────────────────────────────────── */
+.login-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #4B6080;
+  background: #F7FAFF;
+  border: 1px solid #D8E8FF;
+  border-radius: 30px;
+  padding: 8px 16px;
+  gap: 6px;
+}
+
+/* ─── Illustration aside ─────────────────────────────────────────────────── */
+.login-aside {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  padding: 60px 60px 60px 80px;
+}
+
+.login-aside-content {
+  max-width: 380px;
+}
+
+.login-aside-headline {
+  font-family: 'Sora', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.login-aside-sub {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.7;
+  margin-bottom: 48px;
+}
+
+/* ─── Stats list ─────────────────────────────────────────────────────────── */
+.login-stats-list {
+  display: flex;
+  gap: 20px;
+}
+
+.login-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px 18px;
+  flex: 1;
+}
+
+.login-stat-value {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--yellow);
+}
+
+.login-stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.4;
+}

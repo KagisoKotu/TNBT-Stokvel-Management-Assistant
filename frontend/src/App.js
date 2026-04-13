@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import CreateGroup from './components/Creategroup'; // 1. Import the new component
 import './App.css';
+import { Login } from './components/Login';
 
 function App() {
   return (
@@ -10,7 +11,8 @@ function App() {
       {/* Semantic main container */}
       <main className="app-root">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Login />} />
+          <Route path="/home" element={<Home />} />
           
           {/* 2. Define the path for your Create Group form */}
           <Route path="/create-group" element={<CreateGroup />} />
