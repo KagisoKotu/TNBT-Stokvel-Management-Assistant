@@ -1,69 +1,84 @@
 const express = require('express');
 const router = express.Router();
-const Group = require('../models/Group'); // Ensure this path matches your Group model
+const Group = require('../models/Group');
+const Member = require('../models/Member');
 const nodemailer = require('nodemailer');
 
-// 1. Setup Nodemailer Transporter using your .env credentials
+
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS 
+    }
 });
 
-// @route   POST api/stokvels
-// @desc    Create a new Stokvel group and send email invite
+
 router.post('/', async (req, res) => {
-  const { groupName, adminId, treasurerDetails, financials } = req.body;
+    try {
+        console.log("--- Processing New Group ---");
+        const { groupName, adminId, treasurerId, financials, treasurerDetails } = req.body;
 
-  try {
-    // 2. Create and Save the group to MongoDB
-    const newGroup = new Group({
-      groupName,
-      adminId,
-      treasurerDetails,
-      financials,
-    });
+        // Save Group to MongoDB
+        const newGroup = new Group({
+            groupName: groupName,
+            adminEmail: adminId,
+            treasurerEmail: treasurerId,
+            contributionAmount: financials.amount,
+            frequency: financials.frequency
+        });
+        await newGroup.save();
+        console.log("✅ Group Saved to DB");
 
-    const savedGroup = await newGroup.save();
+        const adminMember = new Member({
+            user: adminId,
+            group: groupName,
+            memberType: 'Admin'
+        });
+        await adminMember.save();
+        console.log("✅ Admin Linked to Group");
 
-    // 3. Setup the Email Content
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: treasurerDetails.email,
-      subject: `Initation: You've been added to ${groupName}`,
-      text: `Hi ${treasurerDetails.firstName},\n\nYou have been officially added as the Treasurer for the "${groupName}" Stokvel group on the TNBT Management Assistant.\n\nPlease log in to your dashboard to manage the group funds.\n\nRegards,\nTNBT Team`,
-    };
+        // 3. SEND THE EMAIL
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: treasurerId, // Sending to the Treasurer's email entered in the form
+            subject: `Invitation to join ${groupName}`,
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #eee; padding: 20px;">
+                    <h2 style="color: #8b5cf6;">Stokvel Invitation</h2>
+                    <p>Hi <strong>${treasurerDetails.firstName}</strong>,</p>
+                    <p>You have been appointed as the <b>Treasurer</b> for the new group: <strong>${groupName}</strong>.</p>
+                    <hr />
+                    <p><strong>Contribution:</strong> R${financials.amount}</p>
+                    <p><strong>Frequency:</strong> ${financials.frequency}</p>
+                    <hr />
+                    <p>Please log in to the Stokvel Stockie app to manage the payouts.</p>
+                    <br />
+                    <p>Regards,<br/>The Stokvel Team</p>
+                </div>
+            `
+        };
 
-    // 4. Send the Email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Nodemailer Error:", error);
-        // We don't send a 500 error here because the group WAS saved successfully
-      } else {
-        console.log("Email sent successfully: " + info.response);
-      }
-    });
+       
+        await transporter.sendMail(mailOptions);
+        console.log(`📧 Email successfully sent to: ${treasurerId}`);
 
-    // 5. Respond to the Frontend
-    res.status(201).json(savedGroup);
+        res.status(201).json({ message: "Group created and invitation sent!" });
 
-  } catch (err) {
-    console.error("Database Error:", err.message);
-    res.status(500).send('Server Error: Could not create group.');
-  }
+    } catch (err) {
+        console.error("❌ Error in Route:", err.message);
+        res.status(500).json({ error: "Server error", details: err.message });
+    }
 });
 
-// @route   GET api/stokvels
-// @desc    Get all groups (useful for your Dashboard later)
-router.get('/', async (req, res) => {
-  try {
-    const groups = await Group.find();
-    res.json(groups);
-  } catch (err) {
-    res.status(500).send('Server Error');
-  }
+
+router.get('/user/:email', async (req, res) => {
+    try {
+        const groups = await Group.find({ adminEmail: req.params.email });
+        res.json(groups);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 module.exports = router;
