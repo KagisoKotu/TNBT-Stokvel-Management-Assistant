@@ -19,11 +19,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         { id: 3, name: 'Mike Johnson', email: 'mike@stokvel.com', phone: '+27 123 456 787', joinDate: '1 Feb 2026', status: 'Pending', amount: 500 },
         { id: 4, name: 'Sarah Williams', email: 'sarah@stokvel.com', phone: '+27 123 456 786', joinDate: '10 Feb 2026', status: 'Paid', amount: 500 },
         { id: 5, name: 'David Brown', email: 'david@stokvel.com', phone: '+27 123 456 785', joinDate: '15 Feb 2026', status: 'Late', amount: 500 }
-      ],
-      recentTransactions: [
-        { id: 1, member: 'John Doe', amount: 500, date: '2026-03-01', status: 'Completed' },
-        { id: 2, member: 'Jane Smith', amount: 500, date: '2026-03-01', status: 'Completed' },
-        { id: 3, member: 'Mike Johnson', amount: 500, date: '2026-03-05', status: 'Pending' }
       ]
     };
     
@@ -49,7 +44,6 @@ const AdminDashboard = ({ user, onLogout }) => {
   
   return (
     <section className="dashboard">
-      {/* Sidebar */}
       <aside className="sidebar">
         <header className="logo">
           <section className="logo-icon">SS</section>
@@ -76,7 +70,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         </nav>
       </aside>
       
-      {/* Main Content */}
       <main className="main-content">
         <header className="header">
           <section className="header-title">
@@ -91,7 +84,6 @@ const AdminDashboard = ({ user, onLogout }) => {
           </section>
         </header>
         
-        {/* Pending Requests Alert */}
         {dashboardData.pendingRequests > 0 && (
           <section className="pending-alert">
             <p>
@@ -103,7 +95,6 @@ const AdminDashboard = ({ user, onLogout }) => {
           </section>
         )}
         
-        {/* Stats Cards */}
         <section className="stats-grid">
           <article className="stat-card">
             <h3 className="stat-title">Total Members</h3>
@@ -123,7 +114,6 @@ const AdminDashboard = ({ user, onLogout }) => {
           </article>
         </section>
         
-        {/* Members Table */}
         <section className="table-wrapper">
           <h3>Member Management</h3>
           <table className="modern-table">
