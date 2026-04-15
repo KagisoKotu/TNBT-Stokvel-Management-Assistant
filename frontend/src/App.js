@@ -6,7 +6,7 @@ import './App.css';
 import { LoginPage } from './components/Login';
 
 import AdminDashboard from './Dashboard/AdminDashboard'; 
-//import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
+import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
 import MemberDashboard from './Dashboard/MemberDashboard';
 
 function App() {
@@ -31,9 +31,9 @@ function App() {
             path="/admin-dashboard/:groupId" 
               element={<AdminDashboard user={user} onLogout={handleLogout} />} 
           />
-        //  <Route 
-          //  path="/treasurer-dashboard/:groupId" 
-         //   element={<TreasurerDashboard user={user} onLogout={handleLogout} />} 
+           <Route 
+             path="/treasurer-dashboard/:groupId" 
+              element={<TreasurerDashboard user={user} onLogout={handleLogout} />} 
           />
           <Route 
             path="/member-dashboard/:groupId" 

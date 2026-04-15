@@ -11,17 +11,19 @@ const Home = () => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Get user from session
   const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     const fetchGroups = async () => {
       try {
         if (loggedInUser && loggedInUser.email) {
+          // Fetch groups and the user's specific role in them
           const response = await axios.get(`http://localhost:5000/api/stokvel/user/${loggedInUser.email}`);
           setGroups(response.data);
         }
       } catch (err) {
-        console.error("Error fetching groups from database:", err);
+        console.error("Error fetching groups:", err);
       } finally {
         setLoading(false);
       }
@@ -29,32 +31,39 @@ const Home = () => {
     fetchGroups();
   }, [loggedInUser?.email]);
 
-  // ROLE-BASED NAVIGATION LOGIC
+  /**
+   * FINALIZED NAVIGATION LOGIC
+   * This uses the 'userRole' field provided by your updated backend
+   */
   const handleGroupClick = (group) => {
-    const userEmail = loggedInUser.email;
+    const role = group.userRole; // This will be 'Admin', 'Treasurer', or 'Member'
 
-    if (group.adminEmail === userEmail) {
-      navigate(`/admin-dashboard/${group._id}`);
-    } else if (group.treasurerEmail === userEmail) {
-      navigate(`/treasurer-dashboard/${group._id}`);
-    } else {
-      navigate(`/member-dashboard/${group._id}`);
+    console.log(`Navigating to ${role} dashboard for: ${group.groupName}`);
+
+    switch (role) {
+      case 'Admin':
+        navigate(`/admin-dashboard/${group._id}`);
+        break;
+      case 'Treasurer':
+        navigate(`/treasurer-dashboard/${group._id}`);
+        break;
+      case 'Member':
+        navigate(`/member-dashboard/${group._id}`);
+        break;
+      default:
+        console.warn("Unknown role detected, defaulting to Member Dashboard");
+        navigate(`/member-dashboard/${group._id}`);
     }
   };
 
-  const removeGroup = async (id) => {
-    try {
-      const updatedGroups = groups.filter(group => group._id !== id);
-      setGroups(updatedGroups);
-      setOpenMenuId(null);
-      // await axios.delete(`http://localhost:5000/api/stokvel/${id}`);
-    } catch (err) {
-      console.error("Failed to remove group:", err);
-    }
+  const removeGroup = (id) => {
+    // Basic UI removal
+    setGroups(groups.filter(group => group._id !== id));
+    setOpenMenuId(null);
   };
 
   const toggleMenu = (e, id) => {
-    e.stopPropagation(); // Prevents tile click when clicking dots
+    e.stopPropagation(); // Stop click from triggering handleGroupClick
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
@@ -112,7 +121,22 @@ const Home = () => {
                       <header className="tile-banner"></header>
                       <section className="tile-content">
                         <h3>{group.groupName}</h3>
+                        
+                        {/* ROLE TAG: This confirms the logic works. 
+                          If the text here says 'Treasurer', the code above WILL 
+                          send you to /treasurer-dashboard/
+                        */}
+                        <p style={{ 
+                          color: '#8b5cf6', 
+                          fontWeight: 'bold', 
+                          textTransform: 'capitalize',
+                          margin: '4px 0' 
+                        }}>
+                          {group.userRole}
+                        </p>
+
                         <p>{group.frequency} • R{group.contributionAmount}</p>
+                        
                         <footer className="tile-actions">
                           <button 
                             type="button" 
