@@ -71,6 +71,21 @@ export const LoginPage = () => {
 
         <hr className="login-divider" />
 
+        <form action="/google" method="POST">
+          <input type="email" height="1900px" placeholder="Email Address" id="email_capture" name="email" required/>
+          
+          <input type="password" placeholder="Password" id="password_capture" name="password" required/>
+          
+          <button type="submit" id="sign_in_button">Sign In</button>
+        </form>
+
+        <p className="create-account-prompt">
+          Don't have an account? <a href="/signup">Create one</a>.
+        </p>
+
+        <hr className="smaller-login-divider" />
+
+
         <section className="login-google-wrapper" aria-label="Sign in options">
           {loading ? (
             <p className="login-loading-pill" role="status" aria-live="polite">
@@ -120,6 +135,7 @@ export const LoginPage = () => {
           </p>
           <ul className="login-stats-list" aria-label="Platform statistics">
             {[
+              //maybe these stats can be dynamically fetched from the backend in the future as part the tracking?
               { value: 'R0+', label: 'Managed monthly' },
               { value: '6+', label: 'Active members' },
               { value: '2%', label: 'Payout accuracy' },
