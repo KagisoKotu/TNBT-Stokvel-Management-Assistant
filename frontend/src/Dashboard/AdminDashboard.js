@@ -6,7 +6,6 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-
   const handleBack = () => {
     navigate('/home'); 
   };
@@ -80,7 +79,7 @@ const AdminDashboard = ({ user, onLogout }) => {
       <section className="tiles-grid">
         <article className="management-card">
           <header className="card-header">
-            <h2 className="card-title">Manage Groups</h2>
+            <h2 className="card-title">Manage Group</h2>
           </header>
           <figure className="card-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -92,7 +91,6 @@ const AdminDashboard = ({ user, onLogout }) => {
           </figure>
         </article>
 
-        
         <article className="management-card">
           <header className="card-header">
             <h2 className="card-title">Manage Meetings</h2>
