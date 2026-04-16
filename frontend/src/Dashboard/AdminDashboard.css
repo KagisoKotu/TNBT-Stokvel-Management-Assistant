@@ -1,76 +1,163 @@
-/* src/components/AdminDashboard.css */
-.dashboard {
-    display: flex;
-    min-height: 100vh;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f7fe;
-    font-family: 'Inter', sans-serif;
+/* Main Layout Container */
+.dashboard-container {
+  background-color: #e3f2fd;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Fix Sidebar to the Left */
-.sidebar {
-    width: 260px;
-    background-color: #ffffff;
-    border-right: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    padding: 2rem 1rem;
-    position: sticky; /* Keeps sidebar visible while scrolling */
-    top: 0;
-    height: 100vh;
+/* Header Bar - Updated for Back Button and Admin Trigger */
+.top-bar {
+  background-color: #d1d5db;
+  padding: 10px 30px;
+  display: flex;
+  justify-content: space-between; /* Pushes back-btn left, user-controls right */
+  align-items: center;
+  height: 60px;
 }
 
-/* Fix Main Content to the Right */
-.main-content {
-    flex: 1;
-    padding: 2rem 3rem;
-    overflow-y: auto;
+/* Back Button (Top Left) */
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
 }
 
-/* Fix the Stats Grid Alignment */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 even columns */
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
+.back-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
-.stat-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+.back-icon-box svg {
+  width: 28px;
+  height: 28px;
+  color: #333;
 }
 
-/* Simple Table Styling */
-.modern-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 12px;
+/* Right Side Controls Group */
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
-.modern-table th, .modern-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
+/* Admin Clickable Area */
+.admin-trigger-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px;
 }
 
-/* Header Styling */
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+.user-role {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a365d;
+  margin: 0;
 }
 
-.btn-logout {
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
+.dropdown-arrow svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s;
+}
+
+/* Rotates the arrow when the menu is open */
+.dropdown-arrow.active {
+  transform: rotate(180deg);
+}
+
+/* The Popup Menu */
+.dropdown-panel {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  margin-top: 15px;
+  z-index: 99;
+}
+
+.menu-action {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  width: 100%;
+  font-size: 1rem;
+  color: #374151;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.menu-action:hover {
+  background-color: #f3f4f6;
+}
+
+.menu-icon-box {
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.menu-icon-box svg {
+  width: 22px;
+  height: 22px;
+  color: #6b7280;
+}
+
+.logout-btn {
+  border-top: 1px solid #e5e7eb;
+  margin-top: 5px;
+  padding-top: 15px;
+}
+
+/* Top Bar Icon Sizes */
+.notification-icon svg { width: 28px; height: 28px; }
+.user-avatar svg { width: 40px; height: 40px; }
+
+/* Grid and Cards */
+.tiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 320px);
+  gap: 40px;
+  justify-content: center;
+  padding: 80px 40px;
+}
+
+.management-card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  aspect-ratio: 1 / 1;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #000000;
+}
+
+.card-icon svg {
+  width: 130px;
+  height: 130px;
+  color: #475569;
 }

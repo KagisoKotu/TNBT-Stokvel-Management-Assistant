@@ -1,167 +1,115 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
-  const [dashboardData, setDashboardData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
-  
-  useEffect(() => {
-    const mockData = {
-      totalMembers: 8,
-      totalContributions: 12500,
-      monthlyContribution: 4000,
-      pendingAmount: 500,
-      pendingRequests: 3,
-      members: [
-        { id: 1, name: 'John Doe', email: 'john@stokvel.com', phone: '+27 123 456 789', joinDate: '15 Jan 2026', status: 'Paid', amount: 500 },
-        { id: 2, name: 'Jane Smith', email: 'jane@stokvel.com', phone: '+27 123 456 788', joinDate: '20 Jan 2026', status: 'Paid', amount: 500 },
-        { id: 3, name: 'Mike Johnson', email: 'mike@stokvel.com', phone: '+27 123 456 787', joinDate: '1 Feb 2026', status: 'Pending', amount: 500 },
-        { id: 4, name: 'Sarah Williams', email: 'sarah@stokvel.com', phone: '+27 123 456 786', joinDate: '10 Feb 2026', status: 'Paid', amount: 500 },
-        { id: 5, name: 'David Brown', email: 'david@stokvel.com', phone: '+27 123 456 785', joinDate: '15 Feb 2026', status: 'Late', amount: 500 }
-      ]
-    };
-    
-    setTimeout(() => {
-      setDashboardData(mockData);
-      setLoading(false);
-    }, 500);
-  }, []);
-  
-  const getInitials = (name) => {
-    return name.split(' ').map(n => n[0]).join('');
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+
+  const handleBack = () => {
+    navigate('/home'); 
   };
-  
-  const getStatusClass = (status) => {
-    if (status === 'Paid') return 'status-paid';
-    if (status === 'Pending') return 'status-pending';
-    return 'status-late';
-  };
-  
-  if (loading) {
-    return <main className="loading">Loading dashboard...</main>;
-  }
-  
+
   return (
-    <section className="dashboard">
-      <aside className="sidebar">
-        <header className="logo">
-          <section className="logo-icon">SS</section>
-          <section className="logo-text">
-            <h2>Stokvel <strong className="blue-text">Stokie</strong></h2>
-            <p>Admin Portal</p>
-          </section>
-        </header>
-        <nav>
-          <ul className="nav-list">
-            <li className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
-              Dashboard
-            </li>
-            <li className={`nav-item ${activeTab === 'members' ? 'active' : ''}`} onClick={() => setActiveTab('members')}>
-              Members
-            </li>
-            <li className={`nav-item ${activeTab === 'transactions' ? 'active' : ''}`} onClick={() => setActiveTab('transactions')}>
-              Transactions
-            </li>
-            <li className={`nav-item ${activeTab === 'reports' ? 'active' : ''}`} onClick={() => setActiveTab('reports')}>
-              Reports
-            </li>
-          </ul>
+    <main className="dashboard-container">
+      <header className="top-bar">
+        <nav className="navigation-controls">
+          <button 
+            type="button" 
+            className="back-btn" 
+            onClick={handleBack}
+            aria-label="Go to Home"
+          >
+            <figure className="back-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </figure>
+          </button>
         </nav>
-      </aside>
-      
-      <main className="main-content">
-        <header className="header">
-          <section className="header-title">
-            <h1>Admin Dashboard</h1>
-            <p>Manage your stokvel groups, approve members, and track contributions</p>
+
+        <section className="user-controls">
+          <figure className="notification-icon">
+            <svg viewBox="0 0 24 24" fill="#ffa500" stroke="none">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+            </svg>
+          </figure>
+          
+          <figure className="user-avatar">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="11" fill="#4a148c" stroke="#4caf50" strokeWidth="2"/>
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#4caf50"/>
+            </svg>
+          </figure>
+
+          <section className="admin-trigger-area" onClick={() => setIsOpen(!isOpen)}>
+            <p className="user-role">Admin</p>
+            <figure className={`dropdown-arrow ${isOpen ? 'active' : ''}`}>
+              <svg viewBox="0 0 24 24" fill="#333">
+                <path d="M7 10l5 5 5-5z" />
+              </svg>
+            </figure>
+
+            {isOpen && (
+              <nav className="dropdown-panel">
+                <button type="button" className="menu-action">
+                  <figure className="menu-icon-box">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                  </figure>
+                  Profile
+                </button>
+                <button type="button" className="menu-action">
+                  <figure className="menu-icon-box">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                  </figure>
+                  Settings
+                </button>
+                <button type="button" className="menu-action logout-btn" onClick={onLogout}>
+                  <figure className="menu-icon-box">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                  </figure>
+                  Logout
+                </button>
+              </nav>
+            )}
           </section>
-          <section className="user-info">
-            <section className="avatar">{user?.avatar || 'AD'}</section>
-            <button className="btn-logout" type="button" onClick={onLogout}>
-              Logout
-            </button>
-          </section>
-        </header>
-        
-        {dashboardData.pendingRequests > 0 && (
-          <section className="pending-alert">
-            <p>
-              <strong>{dashboardData.pendingRequests} pending join requests</strong> - Members are waiting for your approval
-            </p>
-            <button className="btn-view-requests" type="button">
-              View Requests
-            </button>
-          </section>
-        )}
-        
-        <section className="stats-grid">
-          <article className="stat-card">
-            <h3 className="stat-title">Total Members</h3>
-            <p className="stat-value">{dashboardData.totalMembers}</p>
-          </article>
-          <article className="stat-card yellow">
-            <h3 className="stat-title">Total Contributions</h3>
-            <p className="stat-value">R{dashboardData.totalContributions.toLocaleString()}</p>
-          </article>
-          <article className="stat-card">
-            <h3 className="stat-title">Monthly Collection</h3>
-            <p className="stat-value">R{dashboardData.monthlyContribution.toLocaleString()}</p>
-          </article>
-          <article className="stat-card yellow">
-            <h3 className="stat-title">Pending Amount</h3>
-            <p className="stat-value">R{dashboardData.pendingAmount.toLocaleString()}</p>
-          </article>
         </section>
+      </header>
+
+      <section className="tiles-grid">
+        <article className="management-card">
+          <header className="card-header">
+            <h2 className="card-title">Manage Groups</h2>
+          </header>
+          <figure className="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </figure>
+        </article>
+
         
-        <section className="table-wrapper">
-          <h3>Member Management</h3>
-          <table className="modern-table">
-            <thead>
-              <tr>
-                <th>Member</th>
-                <th>Contact</th>
-                <th>Join Date</th>
-                <th>Monthly Contribution</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dashboardData.members.map((member) => (
-                <tr key={member.id}>
-                  <td>
-                    <section className="member-info">
-                      <section className="member-avatar">{getInitials(member.name)}</section>
-                      <section className="member-details">
-                        <p><strong>{member.name}</strong></p>
-                        <p className="member-id">ID: MEM-{String(member.id).padStart(3, '0')}</p>
-                      </section>
-                    </section>
-                  </td>
-                  <td>
-                    <p>{member.email}</p>
-                    <p className="member-phone">{member.phone}</p>
-                  </td>
-                  <td>{member.joinDate}</td>
-                  <td>R{member.amount.toLocaleString()}</td>
-                  <td>
-                    <p className={`status-badge ${getStatusClass(member.status)}`}>
-                      {member.status}
-                    </p>
-                  </td>
-                  <td>
-                    <button className="btn-action" type="button">
-                      View
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      </main>
-    </section>
+        <article className="management-card">
+          <header className="card-header">
+            <h2 className="card-title">Manage Meetings</h2>
+          </header>
+          <figure className="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+              <circle cx="12" cy="16" r="3" />
+              <polyline points="12 14 12 16 13 17" />
+            </svg>
+          </figure>
+        </article>
+      </section>
+    </main>
   );
 };
 
