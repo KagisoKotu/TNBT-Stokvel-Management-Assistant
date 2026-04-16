@@ -82,39 +82,38 @@ const CreateGroup = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      // 1. Get logged-in user from localStorage
-      const loggedInUser = JSON.parse(localStorage.getItem('user'));
+      const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
-      if (!loggedInUser || !loggedInUser._id) {
-        alert("Session expired. Please log in again to create a group.");
+      if (!loggedInUser || !loggedInUser.email) {
+        alert("Session error: Please log out and back in.");
         return;
       }
 
-      // 2. Construct payload for MongoDB
+      // Updated payload to use Emails as Strings to match your new Schema approach
       const payload = {
         groupName: formData.groupName,
-        adminId: loggedInUser._id, // Automatic Admin Assignment
+        adminId: loggedInUser.email, 
+        treasurerId: formData.treasurer.email, 
         treasurerDetails: {
           firstName: formData.treasurer.firstName,
           surname: formData.treasurer.surname,
           email: formData.treasurer.email
         },
         financials: {
-            amount: formData.contributionAmount,
+            amount: Number(formData.contributionAmount),
             frequency: formData.frequency,
-            duration: formData.duration
-        }
+            duration: Number(formData.duration)
+        },
+        members: members.map(({ firstName, surname, email }) => ({ firstName, surname, email }))
       };
 
       try {
-        // 3. Post to Backend
-        await axios.post('http://localhost:5000/api/stokvels', payload);
-        
-        alert("Success! Group created and saved to MongoDB.");
-        navigate('/'); 
+        await axios.post('http://localhost:5000/api/stokvel', payload);
+        alert("Success! Group created and saved.");
+        navigate('/home'); 
       } catch (err) {
         console.error("Submission Error:", err);
-        alert(err.response?.data?.error || "Error connecting to the database.");
+        alert(err.response?.data?.details || "Error adding to database. Check terminal.");
       }
     }
   };
@@ -145,6 +144,7 @@ const CreateGroup = () => {
                 className={errors.groupName ? 'input-error' : ''}
                 required
               />
+              {errors.groupName && <span className="error-text">{errors.groupName}</span>}
             </p>
 
             <section className="form-row">
