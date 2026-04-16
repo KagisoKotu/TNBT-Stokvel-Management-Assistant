@@ -6,7 +6,8 @@
     "test:coverage": "jest --coverage --passWithNoTests"
   },
   "devDependencies": {
-    "jest": "^30.3.0"
+    "jest": "^30.3.0",
+    "supertest": "^7.2.2"
   },
   "dependencies": {
     "cors": "^2.8.6",
