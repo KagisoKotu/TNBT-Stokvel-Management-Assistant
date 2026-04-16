@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import CreateGroup from './components/Creategroup'; 
 import './App.css';
@@ -7,7 +7,7 @@ import { LoginPage } from './components/Login';
 import { SignUp } from './components/SignUp';
 
 import AdminDashboard from './Dashboard/AdminDashboard'; 
-//import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
+import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
 import MemberDashboard from './Dashboard/MemberDashboard';
 
 function App() {
@@ -27,19 +27,17 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/home" element={<Home />} />
           <Route path="/create-group" element={<CreateGroup />} />
-          
-          {}
-           <Route 
+          <Route 
             path="/admin-dashboard/:groupId" 
-              element={<AdminDashboard user={user} onLogout={handleLogout} />} 
+            element={<AdminDashboard user={user} onLogout={handleLogout} />} 
           />
-        { /* //  <Route 
-          //  path="/treasurer-dashboard/:groupId" 
-         //   element={<TreasurerDashboard user={user} onLogout={handleLogout} />} 
-          /> */}
+          <Route 
+            path="/treasurer-dashboard/:groupId" 
+            element={<TreasurerDashboard user={user} onLogout={handleLogout} />} 
+          />
           <Route 
             path="/member-dashboard/:groupId" 
-              element={<MemberDashboard user={user} onLogout={handleLogout} />} 
+            element={<MemberDashboard user={user} onLogout={handleLogout} />} 
           />
         </Routes>
       </main>

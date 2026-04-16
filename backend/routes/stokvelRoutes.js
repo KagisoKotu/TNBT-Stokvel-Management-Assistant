@@ -4,7 +4,7 @@ const Group = require('../models/Group');
 const Member = require('../models/Member');
 const nodemailer = require('nodemailer');
 
-
+// 1. Setup Email Transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -13,13 +13,14 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-
+// 2. POST Route: Create Group & Link ALL Roles (Admin, Treasurer, and Members)
 router.post('/', async (req, res) => {
     try {
         console.log("--- Processing New Group ---");
-        const { groupName, adminId, treasurerId, financials, treasurerDetails } = req.body;
+        // Destructure all fields including the 'members' array from the UI
+        const { groupName, adminId, treasurerId, financials, treasurerDetails, members } = req.body;
 
-        // Save Group to MongoDB
+        // A. Save Group to MongoDB
         const newGroup = new Group({
             groupName: groupName,
             adminEmail: adminId,
@@ -30,18 +31,50 @@ router.post('/', async (req, res) => {
         await newGroup.save();
         console.log("✅ Group Saved to DB");
 
-        const adminMember = new Member({
-            user: adminId,
+        // B. Save Admin as a Member
+        await Member.create({
+            user: adminId.toLowerCase(),
             group: groupName,
             memberType: 'Admin'
         });
-        await adminMember.save();
         console.log("✅ Admin Linked to Group");
 
-        // 3. SEND THE EMAIL
+        // C. Save Treasurer as a Member
+        await Member.create({
+            user: treasurerId.toLowerCase(),
+            group: groupName,
+            memberType: 'Treasurer'
+        });
+        console.log("✅ Treasurer Linked to Group");
+
+        // D. LOOP THROUGH ADDITIONAL MEMBERS AND SAVE THEM
+        // This fixes the issue where people added in the "Add Member" section couldn't see the group
+        if (members && Array.isArray(members)) {
+            for (let m of members) {
+                if (m.email && m.email.trim() !== "") {
+                    await Member.create({
+                        user: m.email.toLowerCase(),
+                        group: groupName,
+                        memberType: 'Member'
+                    });
+                    console.log(`✅ Member ${m.email} saved to DB`);
+
+                    // Send Invitation Email to Member
+                    const memberMail = {
+                        from: process.env.EMAIL_USER,
+                        to: m.email,
+                        subject: `Invitation to join ${groupName}`,
+                        html: `<p>You have been invited to join <b>${groupName}</b> as a member. Log in to your dashboard to see details.</p>`
+                    };
+                    transporter.sendMail(memberMail).catch(err => console.log("Member Email Error:", err));
+                }
+            }
+        }
+
+        // E. Send the primary Invitation Email to the Treasurer
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: treasurerId, // Sending to the Treasurer's email entered in the form
+            to: treasurerId,
             subject: `Invitation to join ${groupName}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; border: 1px solid #eee; padding: 20px;">
@@ -59,11 +92,10 @@ router.post('/', async (req, res) => {
             `
         };
 
-       
         await transporter.sendMail(mailOptions);
-        console.log(`📧 Email successfully sent to: ${treasurerId}`);
+        console.log(`📧 Treasurer Email successfully sent to: ${treasurerId}`);
 
-        res.status(201).json({ message: "Group created and invitation sent!" });
+        res.status(201).json({ message: "Group created and all participants linked!" });
 
     } catch (err) {
         console.error("❌ Error in Route:", err.message);
@@ -71,12 +103,37 @@ router.post('/', async (req, res) => {
     }
 });
 
-
+// 3. GET Route: Fetch groups for ANY user (Admin, Treasurer, or Member)
 router.get('/user/:email', async (req, res) => {
     try {
-        const groups = await Group.find({ adminEmail: req.params.email });
-        res.json(groups);
+        const userEmail = req.params.email.toLowerCase();
+        console.log(`Fetching memberships for: ${userEmail}`);
+
+        // Search the Member table, which now contains Admin, Treasurer, and ALL Members
+        const memberships = await Member.find({ user: userEmail });
+
+        if (!memberships || memberships.length === 0) {
+            return res.json([]); 
+        }
+
+        // Get the names of the groups this user is in
+        const groupNames = memberships.map(m => m.group);
+
+        // Fetch the full details from Group table
+        const groupDetails = await Group.find({ groupName: { $in: groupNames } });
+
+        // Merge the Group info with the specific user's role
+        const results = groupDetails.map(group => {
+            const m = memberships.find(membership => membership.group === group.groupName);
+            return {
+                ...group._doc,
+                userRole: m ? m.memberType : 'Member' 
+            };
+        });
+
+        res.json(results);
     } catch (err) {
+        console.error("❌ Error fetching groups:", err.message);
         res.status(500).json({ error: err.message });
     }
 });

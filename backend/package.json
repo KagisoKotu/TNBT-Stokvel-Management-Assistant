@@ -5,7 +5,8 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "dev": "nodemon server.js",
-    "test": "jest --passWithNoTests"
+    "test": "jest",
+    "test:coverage": "jest --coverage --passWithNoTests"
   },
   "devDependencies": {
     "jest": "^30.3.0"

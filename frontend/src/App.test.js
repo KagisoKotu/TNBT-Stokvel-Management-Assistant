@@ -1,8 +1,19 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom'; 
 import App from './App';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+jest.mock('@react-oauth/google', () => ({
+  GoogleLogin: () => <div>Google Login Mock</div>,
+  useGoogleLogin: () => ({ login: jest.fn() }),
+}));
+
+test('renders the StokvelStokkie logo text', () => {
+  render(
+    <MemoryRouter>
+      <App />
+    </MemoryRouter>
+  );
+  
+  const logoElement = screen.getByText(/StokvelStokkie/i); 
+  expect(logoElement).toBeInTheDocument();
 });
