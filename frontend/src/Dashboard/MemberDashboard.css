@@ -1,6 +1,3 @@
-/* src/components/MemberDashboard.css */
-
-/* Main Layout - Matches Admin Dashboard for consistency */
 .dashboard {
     display: flex;
     min-height: 100vh;
@@ -8,7 +5,6 @@
     font-family: 'Inter', -apple-system, sans-serif;
 }
 
-/* Sidebar Styling */
 .sidebar {
     width: 260px;
     background-color: #ffffff;
@@ -61,7 +57,6 @@
     color: white;
 }
 
-/* Content Area */
 .main-content {
     flex: 1;
     padding: 2rem 3rem;
@@ -95,7 +90,6 @@
     margin-left: 10px;
 }
 
-/* Group Info Section */
 .group-info {
     background: linear-gradient(135deg, #004aad, #0062e3);
     color: white;
@@ -106,7 +100,7 @@
 
 .group-info h2 { margin-bottom: 0.5rem; }
 
-/* Stats Cards */
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -127,7 +121,6 @@
 .stat-title { color: #636e72; font-size: 0.9rem; margin-bottom: 0.5rem; }
 .stat-value { font-size: 1.5rem; font-weight: bold; color: #2d3436; }
 
-/* Personal Info Box */
 .personal-info-wrapper {
     background: white;
     padding: 1.5rem;
@@ -142,7 +135,6 @@
     margin-top: 1rem;
 }
 
-/* Contribution History List */
 .contribution-list {
     background: white;
     padding: 1.5rem;
@@ -169,7 +161,6 @@
 .contribution-method { font-size: 0.8rem; color: #636e72; }
 .contribution-amount { font-weight: bold; color: #2d3436; }
 
-/* Status Badges */
 .status-badge {
     padding: 5px 12px;
     border-radius: 20px;
@@ -180,7 +171,7 @@
 .status-paid { background: #e6fffb; color: #00b894; }
 .status-pending { background: #fffbe6; color: #fdcb6e; }
 
-/* Footer Buttons */
+
 .action-buttons {
     margin-top: 2rem;
     display: flex;

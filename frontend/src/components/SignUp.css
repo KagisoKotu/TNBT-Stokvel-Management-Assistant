@@ -1,4 +1,4 @@
-/* ─── CSS Variables ──────────────────────────────────────────────────────── */
+
 :root {
   --blue:        #1A3A6B;
   --blue-mid:    #2563C8;
@@ -7,8 +7,6 @@
   --white:       #FFFFFF;
 }
 
-
-/* ─── Page layout ────────────────────────────────────────────────────────── */
 .signup-page {
   font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
@@ -19,7 +17,6 @@
   overflow: hidden;
 }
 
-/* ─── Login card ─────────────────────────────────────────────────────────── */
 .signup-card {
   position: relative;
   z-index: 2;
@@ -34,7 +31,6 @@
   animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ─── Logo / branding ────────────────────────────────────────────────────── */
 .signup-logo-row {
   display: flex;
   align-items: center;
@@ -54,7 +50,6 @@
   letter-spacing: -0.3px;
 }
 
-/* ─── Signup card ─────────────────────────────────────────────────────────── */
 .signup-card {
   position: relative;
   z-index: 2;
@@ -70,7 +65,6 @@
   animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ─── Headline & subtext ─────────────────────────────────────────────────── */
 .signup-headline {
   font-family: 'Sora', sans-serif;
   font-weight: 700;
@@ -87,7 +81,6 @@
   margin-bottom: 12px;
 }
 
-/* ─── Divider ────────────────────────────────────────────────────────────── */
 .signup-divider {
   height: 1px;
   background: #E2ECF8;
@@ -102,7 +95,7 @@
   margin-bottom: 15px;
 }
 
-/* ─── Manual Sign Up ─────────────────────────────────────────────── */ 
+
 .signup-sub{
   font-size: 14.5px;
   color: #475569;

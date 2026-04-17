@@ -11,7 +11,7 @@ const Home = () => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Get user from session
+ 
   const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
@@ -31,10 +31,7 @@ const Home = () => {
     fetchGroups();
   }, [loggedInUser?.email]);
 
-  /**
-   * FINALIZED NAVIGATION LOGIC
-   * This uses the 'userRole' field provided by your updated backend
-   */
+ 
   const handleGroupClick = (group) => {
     const role = group.userRole; // This will be 'Admin', 'Treasurer', or 'Member'
 
@@ -63,7 +60,7 @@ const Home = () => {
   };
 
   const toggleMenu = (e, id) => {
-    e.stopPropagation(); // Stop click from triggering handleGroupClick
+    e.stopPropagation(); 
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
@@ -122,10 +119,7 @@ const Home = () => {
                       <section className="tile-content">
                         <h3>{group.groupName}</h3>
                         
-                        {/* ROLE TAG: This confirms the logic works. 
-                          If the text here says 'Treasurer', the code above WILL 
-                          send you to /treasurer-dashboard/
-                        */}
+                        {}
                         <p style={{ 
                           color: '#8b5cf6', 
                           fontWeight: 'bold', 

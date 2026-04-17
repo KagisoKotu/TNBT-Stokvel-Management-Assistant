@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap');
 
-/* ─── Reset & base ───────────────────────────────────────────────────────── */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -11,7 +11,6 @@ ul {
   list-style: none;
 }
 
-/* ─── Animations ─────────────────────────────────────────────────────────── */
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -21,7 +20,7 @@ ul {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── CSS Variables ──────────────────────────────────────────────────────── */
+
 :root {
   --blue:        #1A3A6B;
   --blue-mid:    #2563C8;
@@ -41,7 +40,6 @@ ul {
   overflow: hidden;
 }
 
-/* ─── Background decorations ─────────────────────────────────────────────── */
 .login-bg-circle1 {
   position: absolute;
   top: -120px;
@@ -75,7 +73,6 @@ ul {
   pointer-events: none;
 }
 
-/* ─── Login card ─────────────────────────────────────────────────────────── */
 .login-card {
   position: relative;
   z-index: 2;
@@ -91,7 +88,6 @@ ul {
   animation: fadeUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* ─── Logo / branding ────────────────────────────────────────────────────── */
 .login-logo-row {
   display: flex;
   align-items: center;
@@ -111,7 +107,6 @@ ul {
   letter-spacing: -0.3px;
 }
 
-/* ─── Headline & subtext ─────────────────────────────────────────────────── */
 .login-headline {
   font-family: 'Sora', sans-serif;
   font-weight: 700;
@@ -128,7 +123,6 @@ ul {
   margin-bottom: 28px;
 }
 
-/* ─── Divider ────────────────────────────────────────────────────────────── */
 .login-divider {
   height: 1px;
   background: #E2ECF8;
@@ -143,7 +137,7 @@ ul {
   margin-bottom: 15px;
 }
 
-/* ─── Google sign-in section ─────────────────────────────────────────────── */
+
 .login-google-wrapper {
   display: flex;
   justify-content: center;
@@ -172,7 +166,6 @@ ul {
   animation: spin 0.7s linear infinite;
 }
 
-/* ─── Error message ──────────────────────────────────────────────────────── */
 .login-error {
   text-align: center;
   color: #C0392B;
@@ -183,7 +176,6 @@ ul {
   padding: 8px 12px;
 }
 
-/* ─── Fine print & links ─────────────────────────────────────────────────── */
 .login-fine-print {
   font-size: 12px;
   color: #7A93B0;
@@ -199,7 +191,6 @@ ul {
   font-weight: 500;
 }
 
-/* ─── Trust badge (card footer) ──────────────────────────────────────────── */
 .login-badge {
   display: flex;
   align-items: center;
@@ -213,7 +204,6 @@ ul {
   gap: 6px;
 }
 
-/* ─── Illustration aside ─────────────────────────────────────────────────── */
 .login-aside {
   flex: 1;
   display: flex;
@@ -244,7 +234,6 @@ ul {
   margin-bottom: 48px;
 }
 
-/* ─── Stats list ─────────────────────────────────────────────────────────── */
 .login-stats-list {
   display: flex;
   gap: 20px;
@@ -274,7 +263,6 @@ ul {
   line-height: 1.4;
 }
 
-/* ─── Manual Sign-In ─────────────────────────────────────────────── */
 form {
   display: flex;
   flex-direction: column;
