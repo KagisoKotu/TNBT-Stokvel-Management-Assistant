@@ -13,7 +13,7 @@
 }
 
 .card-header h1 {
-  color: #2c5282; /* Deep blue from screenshot */
+  color: #2c5282; 
   font-size: 1.25rem;
 }
 
@@ -52,7 +52,7 @@
   color: #1e293b;
 }
 
-/* Link Styling */
+
 .receipt-link {
   color: #3b82f6;
   text-decoration: none;
@@ -63,7 +63,6 @@
   text-decoration: underline;
 }
 
-/* Action Buttons */
 .actions {
   display: flex;
   gap: 10px;
@@ -82,11 +81,11 @@
 }
 
 .btn-confirm {
-  background-color: #48bb78; /* Green */
+  background-color: #48bb78; 
 }
 
 .btn-flag {
-  background-color: #f56565; /* Red */
+  background-color: #f56565; 
 }
 
 .btn-confirm:hover { background-color: #38a169; }

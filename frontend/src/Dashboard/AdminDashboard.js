@@ -10,6 +10,10 @@ const AdminDashboard = ({ user, onLogout }) => {
     navigate('/home'); 
   };
 
+  const goToMeetingManager = () => {
+    navigate('/meeting-manager');
+  };
+
   return (
     <main className="dashboard-container">
       <header className="top-bar">
@@ -91,7 +95,12 @@ const AdminDashboard = ({ user, onLogout }) => {
           </figure>
         </article>
 
-        <article className="management-card">
+        {}
+        <article 
+          className="management-card" 
+          onClick={goToMeetingManager} 
+          style={{ cursor: 'pointer' }}
+        >
           <header className="card-header">
             <h2 className="card-title">Manage Meetings</h2>
           </header>

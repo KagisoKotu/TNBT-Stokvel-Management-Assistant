@@ -59,17 +59,17 @@ mongoose.connect(process.env.MONGO_URI, connectionOptions)
         console.error('Database Connection Error:', err.message);
     });
 
-// --- Routes ---
+
 app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/meetings', require('./routes/meetingRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Stokvel Assistant API is running!');
 });
 
-// Start Server
 app.listen(PORT, () => {
     console.log(`Server listening at http://localhost:${PORT}`);
 });

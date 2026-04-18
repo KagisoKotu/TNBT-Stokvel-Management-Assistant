@@ -1,4 +1,4 @@
-/* --- Global Resets & Base Styles --- */
+
 fieldset {
   border: none;
   padding: 0;
@@ -12,7 +12,6 @@ fieldset {
   font-family: sans-serif;
 }
 
-/* --- Header Navigation --- */
 .create-header-nav {
   display: flex;
   justify-content: space-between;
@@ -39,7 +38,6 @@ fieldset {
   width: 24px;
 }
 
-/* --- Form Container --- */
 .form-container {
   padding: 0 20px;
 }
@@ -53,7 +51,6 @@ fieldset {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
 }
 
-/* --- Form Sections --- */
 .form-section {
   border: 1.5px solid #f2f2f2;
   border-radius: 20px;
@@ -76,19 +73,17 @@ fieldset {
   width: auto;
 }
 
-/* --- NEW: Treasurer Specific Styling --- */
+
 .treasurer-section {
-  background-color: #f9f7ff; /* Subtle purple tint to distinguish role */
+  background-color: #f9f7ff; 
   border: 1.5px solid #d8c9eb;
 }
 
 .treasurer-section legend {
   color: #5d3d82;
-  /* Matches the tint background and the white page background */
   background: linear-gradient(to bottom, #fafafa 50%, #f9f7ff 50%);
 }
 
-/* --- Grid Layouts --- */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -100,7 +95,6 @@ fieldset {
   grid-template-columns: 1fr 1fr 1.5fr !important;
 }
 
-/* --- Input Groups --- */
 .input-group {
   display: flex;
   flex-direction: column;
@@ -130,7 +124,6 @@ fieldset {
   border-color: #714b9d;
 }
 
-/* --- Typography & Notes --- */
 .section-note {
   display: block;
   font-size: 0.85rem;
@@ -145,7 +138,6 @@ fieldset {
   border-top: 1px solid #f2f2f2;
 }
 
-/* --- Input with Actions (Trash button) --- */
 .input-with-action {
   display: flex;
   align-items: center;
@@ -157,7 +149,6 @@ fieldset {
   flex: 1;
 }
 
-/* --- Error States --- */
 .input-error {
   border-color: #ff4d4d !important;
   background-color: #fff8f8;
@@ -170,7 +161,6 @@ fieldset {
   margin-top: 4px;
 }
 
-/* --- Buttons --- */
 .add-row-btn {
   background: none;
   border: 2px dashed #714b9d;
@@ -226,7 +216,6 @@ fieldset {
   transform: scale(0.98);
 }
 
-/* --- Responsive Adjustments --- */
 @media (max-width: 768px) {
   .form-row, .triple-col {
     grid-template-columns: 1fr !important;
@@ -242,7 +231,7 @@ fieldset {
     padding: 10px 20px;
   }
 
-  /* Adjust treasurer legend for mobile single column */
+
   .treasurer-section legend {
     background: white;
   }

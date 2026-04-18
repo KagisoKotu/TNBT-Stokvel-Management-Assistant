@@ -38,10 +38,8 @@
   font-weight: 700;
 }
 
-/* Purple Button styling */
 .btn-update {
-  background-color: #9f33b2; /* Purple from your screenshot */
-  color: white;
+  background-color: #9f33b2; 
   border: none;
   padding: 10px 20px;
   border-radius: 6px;

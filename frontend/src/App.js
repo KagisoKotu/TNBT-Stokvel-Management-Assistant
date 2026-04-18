@@ -9,6 +9,8 @@ import { SignUp } from './components/SignUp';
 import AdminDashboard from './Dashboard/AdminDashboard'; 
 import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
 import MemberDashboard from './Dashboard/MemberDashboard';
+import MeetingManagerDashboard from './Dashboard/MeetingManagerDashboard';
+import ScheduleMeeting from './Dashboard/ScheduleMeeting'; 
 
 function App() {
   const handleLogout = () => {
@@ -16,17 +18,25 @@ function App() {
     window.location.href = '/';
   };
 
-  // Retrieves user from session storage after login
   const user = JSON.parse(sessionStorage.getItem('user'));
 
   return (
     <Router>
       <main className="app-root">
         <Routes>
+          {/* Auth Routes */}
           <Route path="/" element={<LoginPage />} /> 
           <Route path="/signup" element={<SignUp />} />
+          
+          {/* App Routes */}
           <Route path="/home" element={<Home />} />
           <Route path="/create-group" element={<CreateGroup />} />
+          
+          {/* Navigation Target */}
+          <Route path="/meeting-manager" element={<MeetingManagerDashboard />} />
+          <Route path="/schedule" element={<ScheduleMeeting />} />
+          
+          {/* Dashboard Routes */}
           <Route 
             path="/admin-dashboard/:groupId" 
             element={<AdminDashboard user={user} onLogout={handleLogout} />} 
