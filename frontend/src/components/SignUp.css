@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=DM+Sans:wght@400;500&display=swap');
+
 /* ─── CSS Variables ──────────────────────────────────────────────────────── */
 :root {
   --blue:        #1A3A6B;
@@ -17,6 +19,40 @@
   background: var(--blue-light);
   position: relative;
   overflow: hidden;
+}
+
+/* ─── Background decorations ─────────────────────────────────────────────── */
+.signup-bg-circle1 {
+  position: absolute;
+  top: -120px;
+  left: -120px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: rgba(37, 99, 200, 0.08);
+  pointer-events: none;
+}
+
+.signup-bg-circle2 {
+  position: absolute;
+  bottom: -80px;
+  right: 45%;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(245, 200, 66, 0.12);
+  pointer-events: none;
+}
+
+.signup-bg-stripe {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 48%;
+  background: var(--blue);
+  clip-path: polygon(6% 0, 100% 0, 100% 100%, 0% 100%);
+  pointer-events: none;
 }
 
 /* ─── Login card ─────────────────────────────────────────────────────────── */
@@ -62,7 +98,6 @@
   width: 100%;
   max-width: 440px;
   margin: auto;
-  margin-left: 6vw;
   padding: 48px 44px 40px;
   border-radius: 20px;
   box-shadow: 0 24px 64px rgba(26, 58, 107, 0.14);

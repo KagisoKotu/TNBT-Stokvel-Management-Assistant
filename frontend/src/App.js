@@ -13,6 +13,7 @@ import MemberDashboard from './Dashboard/MemberDashboard';
 function App() {
   const handleLogout = () => {
     sessionStorage.clear();
+    //window.location.hash = '#/';
     window.location.href = '/';
   };
 
