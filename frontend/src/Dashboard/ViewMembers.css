@@ -1,0 +1,48 @@
+.view-members-container {
+  padding: 40px;
+  position: relative;
+  width: 100%;
+}
+
+.back-button {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  cursor: pointer;
+  color: #334155;
+}
+
+.group-info-header {
+  text-align: right;
+  margin-bottom: 50px;
+}
+
+.group-name-bold {
+  font-weight: 900; 
+  font-size: 2.2rem;
+  margin: 0;
+  color: #0f172a;
+}
+
+.creation-date {
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.member-item-link {
+  padding: 18px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  list-style: none;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+}
+
+.member-item-link:hover {
+  background-color: #f8fafc;
+  color: #2563eb;
+  padding-left: 25px; 
+}
