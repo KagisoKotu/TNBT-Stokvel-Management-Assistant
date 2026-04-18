@@ -1,21 +1,62 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios'; // 1. Import axios
 import './ScheduleMeeting.css';
 
 const ScheduleMeeting = () => {
   const [platform, setPlatform] = useState('google-meet');
   const [locationType, setLocationType] = useState('online');
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+
+  // 2. Add State to capture input values
+  const [formData, setFormData] = useState({
+    meetingTitle: '',
+    purpose: '',
+    meetingDate: '',
+    startTime: '',
+    endTime: '',
+    otherPlatform: '',
+    meetingLink: '',
+    physicalLocation: ''
+  });
+
+  // 3. Simple function to update the state as you type
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({ ...prev, [id]: value }));
+  };
+
   const handleGoBack = (e) => {
     e.preventDefault();
-    navigate(-1); 
+    navigate(-1);
+  };
+
+  // 4. The function that saves to MongoDB
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const meetingData = {
+      ...formData,
+      locationType,
+      platform,
+      // Ensure we only save the relevant location
+      meetingLink: locationType === 'online' ? formData.meetingLink : '',
+      physicalLocation: locationType === 'in-person' ? formData.physicalLocation : ''
+    };
+
+    try {
+      await axios.post('http://localhost:5000/api/meetings/schedule', meetingData);
+      alert("Meeting Scheduled Successfully!");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error saving meeting:", error);
+      alert("Failed to schedule meeting.");
+    }
   };
 
   return (
     <section className="app-shell">
       <nav className="top-navbar" aria-label="Main Navigation">
         <header className="navbar-content">
-          {}
           <button 
             onClick={handleGoBack} 
             className="back-link-btn" 
@@ -39,35 +80,66 @@ const ScheduleMeeting = () => {
             </hgroup>
           </header>
 
-          <form className="meeting-form">
-            {}
+          {/* 5. Add onSubmit here */}
+          <form className="meeting-form" onSubmit={handleSubmit}>
             <section className="input-group">
               <label htmlFor="meetingTitle">Meeting Title <mark className="required-marker">*</mark></label>
-              <input type="text" id="meetingTitle" placeholder="e.g., Project Kickoff Meeting" required />
+              <input 
+                type="text" 
+                id="meetingTitle" 
+                placeholder="e.g., Project Kickoff Meeting" 
+                required 
+                value={formData.meetingTitle}
+                onChange={handleInputChange} 
+              />
             </section>
 
             <section className="input-group">
               <label htmlFor="purpose">Purpose / Agenda (optional)</label>
-              <textarea id="purpose" rows="3" placeholder="Add a short description or agenda"></textarea>
+              <textarea 
+                id="purpose" 
+                rows="3" 
+                placeholder="Add a short description or agenda"
+                value={formData.purpose}
+                onChange={handleInputChange}
+              ></textarea>
             </section>
 
-            {}
             <fieldset className="form-row">
               <section className="input-group">
                 <label htmlFor="meetingDate">Date <mark className="required-marker">*</mark></label>
-                <input type="date" id="meetingDate" required />
+                <input 
+                  type="date" 
+                  id="meetingDate" 
+                  required 
+                  value={formData.meetingDate}
+                  onChange={handleInputChange}
+                />
               </section>
               <section className="input-group">
                 <label htmlFor="startTime">Time <mark className="required-marker">*</mark></label>
                 <section className="time-range-group">
-                  <input type="time" id="startTime" required aria-label="Start time" />
+                  <input 
+                    type="time" 
+                    id="startTime" 
+                    required 
+                    aria-label="Start time" 
+                    value={formData.startTime}
+                    onChange={handleInputChange}
+                  />
                   <span aria-hidden="true">to</span>
-                  <input type="time" id="endTime" required aria-label="End time" />
+                  <input 
+                    type="time" 
+                    id="endTime" 
+                    required 
+                    aria-label="End time" 
+                    value={formData.endTime}
+                    onChange={handleInputChange}
+                  />
                 </section>
               </section>
             </fieldset>
 
-            {}
             <fieldset className="input-group">
               <legend>Location Type <mark className="required-marker">*</mark></legend>
               <nav className="toggle-navigation" role="group">
@@ -88,33 +160,43 @@ const ScheduleMeeting = () => {
               </nav>
             </fieldset>
 
-            {}
             {locationType === 'online' ? (
               <>
-                <fieldset className="form-row">
-                  <section className="input-group">
-                    <label htmlFor="platform">Meeting Platform</label>
-                    <select id="platform" value={platform} onChange={(e) => setPlatform(e.target.value)}>
-                      <option value="google-meet">Google Meet</option>
-                      <option value="zoom">Zoom</option>
-                      <option value="teams">Microsoft Teams</option>
-                      <option value="whatsapp">WhatsApp call</option>
-                      <option value="others">Others</option>
-                    </select>
-                  </section>
+                <section className="input-group">
+                  <label htmlFor="platform">Meeting Platform</label>
+                  <select id="platform" value={platform} onChange={(e) => setPlatform(e.target.value)}>
+                    <option value="google-meet">Google Meet</option>
+                    <option value="zoom">Zoom</option>
+                    <option value="teams">Microsoft Teams</option>
+                    <option value="whatsapp">WhatsApp call</option>
+                    <option value="others">Others</option>
+                  </select>
+                </section>
 
-                  {platform === 'others' && (
-                    <section className="input-group">
-                      <label htmlFor="otherPlatform">Specify Platform <mark className="required-marker">*</mark></label>
-                      <input type="text" id="otherPlatform" placeholder="Type platform name" required />
-                    </section>
-                  )}
-                </fieldset>
+                {platform === 'others' && (
+                  <section className="input-group">
+                    <label htmlFor="otherPlatform">Specify Platform <mark className="required-marker">*</mark></label>
+                    <input 
+                      type="text" 
+                      id="otherPlatform" 
+                      placeholder="Type platform name" 
+                      required 
+                      value={formData.otherPlatform}
+                      onChange={handleInputChange}
+                    />
+                  </section>
+                )}
 
                 <section className="input-group">
                   <label htmlFor="meetingLink">Meeting Link</label>
                   <section className="action-input-wrapper">
-                    <input type="url" id="meetingLink" placeholder="https://meet.google.com/..." />
+                    <input 
+                      type="url" 
+                      id="meetingLink" 
+                      placeholder="https://meet.google.com/..." 
+                      value={formData.meetingLink}
+                      onChange={handleInputChange}
+                    />
                     <button type="button" className="copy-btn" aria-label="Copy link">📋</button>
                   </section>
                 </section>
@@ -127,12 +209,13 @@ const ScheduleMeeting = () => {
                   id="physicalLocation" 
                   placeholder="e.g., Conference Room B or 123 Business Way" 
                   required 
+                  value={formData.physicalLocation}
+                  onChange={handleInputChange}
                 />
               </section>
             )}
 
             <footer className="form-footer">
-              {}
               <button type="button" onClick={handleGoBack} className="cancel-link" style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}>
                 Cancel
               </button>
