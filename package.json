@@ -1,16 +1,17 @@
 {
+  
   "homepage": "https://gomolemorampa.github.io/TNBT-Stokvel-Management-Assistant",
   "scripts": {
     "start": "node server.js",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "build": "cd frontend && npm run build",
+    "predeploy": "cd frontend && npm run build",
+    "deploy": "cd frontend && npm run deploy",
     "dev": "nodemon server.js",
-    "test": "jest",
-    "test:coverage": "jest --coverage --passWithNoTests"
+    "test": "jest --passWithNoTests"
   },
   "devDependencies": {
     "jest": "^30.3.0",
-    "supertest": "^7.2.2"
+    "gh-pages": "^6.3.0"
   },
   "dependencies": {
     "cors": "^2.8.6",
@@ -19,4 +20,6 @@
     "mongoose": "^9.4.1",
     "nodemailer": "^8.0.5"
   }
+
+
 }

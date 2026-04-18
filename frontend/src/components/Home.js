@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Home.css';
 import { House, Search, Wallet, Bell, User, ChevronDown, MoreVertical, Trash2 } from 'lucide-react'; 
 
@@ -8,20 +9,61 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [groups, setGroups] = useState([]);
   const [openMenuId, setOpenMenuId] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Get user from session
+  const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
-    const savedGroups = JSON.parse(localStorage.getItem('stockvelGroups')) || [];
-    setGroups(savedGroups);
-  }, []);
+    const fetchGroups = async () => {
+      try {
+        if (loggedInUser && loggedInUser.email) {
+          // Fetch groups and the user's specific role in them
+          const response = await axios.get(`http://localhost:5000/api/stokvel/user/${loggedInUser.email}`);
+          setGroups(response.data);
+        }
+      } catch (err) {
+        console.error("Error fetching groups:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGroups();
+  }, [loggedInUser?.email]);
+
+  /**
+   * FINALIZED NAVIGATION LOGIC
+   * This uses the 'userRole' field provided by your updated backend
+   */
+  const handleGroupClick = (group) => {
+    const role = group.userRole; // This will be 'Admin', 'Treasurer', or 'Member'
+
+    console.log(`Navigating to ${role} dashboard for: ${group.groupName}`);
+
+    switch (role) {
+      case 'Admin':
+        navigate(`/admin-dashboard/${group._id}`);
+        break;
+      case 'Treasurer':
+        navigate(`/treasurer-dashboard/${group._id}`);
+        break;
+      case 'Member':
+        navigate(`/member-dashboard/${group._id}`);
+        break;
+      default:
+        console.warn("Unknown role detected, defaulting to Member Dashboard");
+        navigate(`/member-dashboard/${group._id}`);
+    }
+  };
 
   const removeGroup = (id) => {
-    const updatedGroups = groups.filter(group => group.id !== id);
-    setGroups(updatedGroups);
-    localStorage.setItem('stockvelGroups', JSON.stringify(updatedGroups));
+    // Basic UI removal
+    setGroups(groups.filter(group => group._id !== id));
     setOpenMenuId(null);
   };
 
-  const toggleMenu = (id) => {
+  const toggleMenu = (e, id) => {
+    e.stopPropagation(); // Stop click from triggering handleGroupClick
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
@@ -40,7 +82,10 @@ const Home = () => {
             </summary>
             <ul className="dropdown-menu">
               <li><button type="button">Profile</button></li>
-              <li><button type="button">Logout</button></li>
+              <li><button type="button" onClick={() => {
+                sessionStorage.clear();
+                navigate('/');
+              }}>Logout</button></li>
             </ul>
           </details>
         </nav>
@@ -60,29 +105,53 @@ const Home = () => {
 
         <section className="groups-display-container">
           <article className={`status-container ${groups.length > 0 ? 'has-grid' : 'is-empty'}`}>
-            {groups.length === 0 ? (
+            {loading ? (
+              <p className="empty-msg">Loading your groups...</p>
+            ) : groups.length === 0 ? (
               <p className="empty-msg">You are currently not in any group</p>
             ) : (
               <ul className="groups-grid">
                 {groups.map((group) => (
-                  <li key={group.id}>
-                    <article className="group-tile">
+                  <li key={group._id}>
+                    <article 
+                      className="group-tile" 
+                      onClick={() => handleGroupClick(group)} 
+                      style={{ cursor: 'pointer' }}
+                    >
                       <header className="tile-banner"></header>
                       <section className="tile-content">
                         <h3>{group.groupName}</h3>
+                        
+                        {/* ROLE TAG: This confirms the logic works. 
+                          If the text here says 'Treasurer', the code above WILL 
+                          send you to /treasurer-dashboard/
+                        */}
+                        <p style={{ 
+                          color: '#8b5cf6', 
+                          fontWeight: 'bold', 
+                          textTransform: 'capitalize',
+                          margin: '4px 0' 
+                        }}>
+                          {group.userRole}
+                        </p>
+
                         <p>{group.frequency} • R{group.contributionAmount}</p>
+                        
                         <footer className="tile-actions">
                           <button 
                             type="button" 
                             className="tile-menu-btn" 
-                            onClick={() => toggleMenu(group.id)}
+                            onClick={(e) => toggleMenu(e, group._id)}
                           >
                             <MoreVertical size={18} />
                           </button>
-                          {openMenuId === group.id && (
+                          {openMenuId === group._id && (
                             <ul className="tile-dropdown">
                               <li>
-                                <button type="button" className="remove-opt" onClick={() => removeGroup(group.id)}>
+                                <button type="button" className="remove-opt" onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeGroup(group._id);
+                                }}>
                                   <Trash2 size={14} /> Remove
                                 </button>
                               </li>

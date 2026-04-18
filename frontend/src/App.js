@@ -1,39 +1,44 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
-import CreateGroup from './components/Creategroup'; // 1. Import the new component
-import ProtectedRoute from './components/ProtectedRoute'; // <-- NEW: Import the wrapper
+import CreateGroup from './components/Creategroup'; 
 import './App.css';
-import { Login } from './components/Login';
+import { LoginPage } from './components/Login';
+import { SignUp } from './components/SignUp';
+
+import AdminDashboard from './Dashboard/AdminDashboard'; 
+import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
+import MemberDashboard from './Dashboard/MemberDashboard';
 
 function App() {
+  const handleLogout = () => {
+    sessionStorage.clear();
+    window.location.href = '/';
+  };
+
+  // Retrieves user from session storage after login
+  const user = JSON.parse(sessionStorage.getItem('user'));
+
   return (
     <Router>
-      {/* Semantic main container */}
       <main className="app-root">
         <Routes>
-          <Route path="/" element={<Login />} />
-          
+          <Route path="/" element={<LoginPage />} /> 
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/create-group" element={<CreateGroup />} />
           <Route 
-            path="/home" 
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            } 
+            path="/admin-dashboard/:groupId" 
+            element={<AdminDashboard user={user} onLogout={handleLogout} />} 
           />
-          
-          {/* 2. Define the path for your Create Group form */}
           <Route 
-            path="/create-group" 
-            element={
-              <ProtectedRoute>
-                <CreateGroup />
-              </ProtectedRoute>
-            } 
+            path="/treasurer-dashboard/:groupId" 
+            element={<TreasurerDashboard user={user} onLogout={handleLogout} />} 
           />
-          
-          {/* Future routes like /search or /wallet will go here */}
+          <Route 
+            path="/member-dashboard/:groupId" 
+            element={<MemberDashboard user={user} onLogout={handleLogout} />} 
+          />
         </Routes>
       </main>
     </Router>

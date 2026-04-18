@@ -1,45 +1,52 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const User = require('../models/User'); 
 
 
-router.post('/google-login', async (req, res) => {
+router.post('/google', async (req, res) => {
+    
+    console.log("--- Auth Request Received ---");
+    console.log("Payload:", req.body);
+
+    const { email, name, surname } = req.body;
+
+   
+    if (!email || !name) {
+        console.error("❌ Auth Failed: Missing email or name in request body");
+        return res.status(400).json({ error: 'Missing required profile information from Google.' });
+    }
+
     try {
-        const { email, name, picture } = req.body;
-
-        // Check if user exists, otherwise create them
+        
         let user = await User.findOne({ email });
 
         if (!user) {
-            user = await User.create({
-                email,
-                name,
-                picture,
-                role: 'Member' // New users start as members
+           
+            user = new User({
+                name: name,
+                surname: surname || "", 
+                email: email
             });
+
+            await user.save();
+            console.log(`✅ Success: New account created for ${email}`);
+        } else {
+            console.log(`ℹ️ Success: Existing user logged in: ${email}`);
         }
 
-        // Create JWT token using the JWT_SECRET 
-        const token = jwt.sign(
-            { id: user._id, role: user.role },
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
-        );
-
-        // Send back the token and user details
+        // 5. Respond with the user data
         res.status(200).json({
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            }
+            message: 'Authentication successful',
+            user: user
         });
-    } catch (error) {
-        console.error("Auth Error:", error);
-        res.status(500).json({ message: "Internal Server Error during auth" });
+
+    } catch (err) {
+        
+        console.error("❌ Database Error during Auth:", err.message);
+        res.status(500).json({ 
+            error: 'Server Error: Could not process user data.',
+            details: err.message 
+        });
     }
 });
 
