@@ -16,7 +16,7 @@ const AdminDashboard = ({ user, onLogout }) => {
   };
 
   const goToMeetingManager = () => {
-    navigate('/meeting-manager');
+    navigate(`/meeting-manager/${groupId}`);
   };
 
   return (
