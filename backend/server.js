@@ -37,7 +37,7 @@ const connectionOptions = {
 
 mongoose.connect(process.env.MONGO_URI, connectionOptions)
     .then(() => {
-        console.log('✅ Connected to Stokvel MongoDB');
+        console.log('Connected to Stokvel MongoDB');
 
         // --- TEMPORARY FIX: DROP THE BAD INDEX ---
         // This runs once when the server starts to clear the 'duplicate null' error
@@ -45,12 +45,12 @@ mongoose.connect(process.env.MONGO_URI, connectionOptions)
             try {
                 // Access the underlying MongoDB driver to drop the index directly
                 await mongoose.connection.db.collection('users').dropIndex('googleId_1');
-                console.log('✨ SUCCESS: Old googleId index dropped! Multiple users can now sign in.');
+                console.log('SUCCESS: Old googleId index dropped! Multiple users can now sign in.');
             } catch (err) {
                 if (err.message.includes('not found')) {
-                    console.log('ℹ️ Index Status: Old index already gone. Your database is clean.');
+                    console.log('Index Status: Old index already gone. Your database is clean.');
                 } else {
-                    console.log('⚠️ Index Note:', err.message);
+                    console.log('Index Note:', err.message);
                 }
             }
         };
@@ -58,20 +58,20 @@ mongoose.connect(process.env.MONGO_URI, connectionOptions)
         // --- END TEMPORARY FIX ---
     })
     .catch(err => {
-        console.error('❌ Database Connection Error:', err.message);
+        console.error('Database Connection Error:', err.message);
     });
 
-// --- Routes ---
+
 app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/meetings', require('./routes/meetingRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Stokvel Assistant API is running!');
 });
 
-// Start Server
 app.listen(PORT, () => {
     console.log(`🚀 Server listening at http://localhost:${PORT}`);
 });

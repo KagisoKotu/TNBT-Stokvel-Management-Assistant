@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, getAdditionalUserInfo } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, getAdditionalUserInfo, signOut } from 'firebase/auth';
 import { auth } from '../services/firebase'; // Make sure this path is correct
 import './Login.css';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+
+  // ==========================================
+  // 🧹 THE CLEANUP SQUAD: Runs immediately when page loads
+  // ==========================================
+  useEffect(() => {
+    // 1. Wipe the token
+    localStorage.removeItem('token');
+    
+    // 2. Wipe the team member's user data
+    sessionStorage.removeItem('user');
+    
+    // 3. Tell Firebase to officially sign the user out
+    signOut(auth).catch((error) => {
+      console.error("Error signing out of Firebase:", error);
+    });
+  }, []); // The empty array [] means this runs ONCE when the page first appears
   
   // State for manual login inputs
   const [email, setEmail] = useState('');
@@ -30,6 +46,8 @@ export const LoginPage = () => {
 
     if (response.ok) {
       localStorage.setItem('token', firebaseToken);
+      // ✨ ADD THIS LINE: Save the user data for your team member's UI ✨
+      sessionStorage.setItem('user', JSON.stringify(data.user));
       // Optional: localStorage.setItem('role', data.user.role);
       navigate('/home');
     } else {
