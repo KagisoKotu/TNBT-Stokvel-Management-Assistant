@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
-import { GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
-import { useNavigate } from 'react-router';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, getAdditionalUserInfo, signOut } from 'firebase/auth';
+import { auth } from '../services/firebase'; // Make sure this path is correct
 import './Login.css';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+
+  // ==========================================
+  // 🧹 THE CLEANUP SQUAD: Runs immediately when page loads
+  // ==========================================
+  useEffect(() => {
+    // 1. Wipe the token
+    localStorage.removeItem('token');
+    
+    // 2. Wipe the team member's user data
+    sessionStorage.removeItem('user');
+    
+    // 3. Tell Firebase to officially sign the user out
+    signOut(auth).catch((error) => {
+      console.error("Error signing out of Firebase:", error);
+    });
+  }, []); // The empty array [] means this runs ONCE when the page first appears
+  
+  // State for manual login inputs
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -15,72 +34,77 @@ export const LoginPage = () => {
   const [password, setPassword] = useState('');
 
   // ==========================================
-  // DOOR 1: THE MANUAL LOGIN DOOR
+  // 1. THE HELPER: Talks to your Backend
   // ==========================================
-  const handleManualLogin = async (e) => {
-    e.preventDefault(); 
-    setLoading(true);
+  const syncWithBackend = async (firebaseToken, firstName='', lastName='') => {
+    const response = await fetch('http://localhost:5000/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: firebaseToken,
+        name: firstName,
+        surname: lastName
+      }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('token', firebaseToken);
+      // ✨ ADD THIS LINE: Save the user data for your team member's UI ✨
+      sessionStorage.setItem('user', JSON.stringify(data.user));
+      // Optional: localStorage.setItem('role', data.user.role);
+      navigate('/home');
+    } else {
+      throw new Error(data.message || 'Server rejected login');
+    }
+  };
+
+  // ==========================================
+  // 2. GOOGLE LOGIN METHOD
+  // ==========================================
+  const handleGoogleLogin = async () => {
     setError('');
-
+    setLoading(true);
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      // ✨ 1. Open the raw Google JSON object
+      const details = getAdditionalUserInfo(result);
+      const googleFirstName = details.profile.given_name;
+      const googleLastName = details.profile.family_name;
+
+      // 2. Grab the secure Firebase Token
+      const token = await result.user.getIdToken();
       
-      const userData = { email, password };
-
-      // Send to the Standard Login Endpoint
-      const response = await axios.post(`${apiUrl}/auth/login`, userData);
-
-      if (response.status === 200) {
-        sessionStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/home', { replace: true });
-      }
+      
+      await syncWithBackend(token, googleFirstName, googleLastName); // Send token to backend
     } catch (err) {
-      console.error("Manual Login Error:", err);
-      const serverMessage = err.response?.data?.error || err.message;
-      setError(`Login failed: ${serverMessage}`);
+      console.error("Google Login Error:", err);
+      setError("Google Login failed: " + err.message);
     } finally {
       setLoading(false);
     }
   };
 
   // ==========================================
-  // DOOR 2: THE GOOGLE LOGIN DOOR
+  // 3. MANUAL LOGIN METHOD
   // ==========================================
-  const handleSuccess = async (credentialResponse) => {
-    setLoading(true);
+  const handleManualLogin = async (e) => {
+    e.preventDefault(); // Stops the page from refreshing when you submit the form
     setError('');
-
+    setLoading(true);
     try {
-      // 1. Decode the token on the frontend (Your teammate's correct logic!)
-      const clientDetails = jwtDecode(credentialResponse.credential);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const token = await userCredential.user.getIdToken();
       
-      // 2. Package it exactly how AuthRoutes.js asked for it
-      const userData = {
-        email: clientDetails.email,
-        name: clientDetails.given_name,
-        surname: clientDetails.family_name || ""
-      };
-      
-      const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-
-      // 3. Send to the /auth/google endpoint
-      const googleResponse = await axios.post(`${apiUrl}/auth/google`, userData);
-
-      if (googleResponse.status === 200) {
-        sessionStorage.setItem('user', JSON.stringify(googleResponse.data.user));
-        navigate('/home', { replace: true });
-      }
+      await syncWithBackend(token); // Send token to backend
     } catch (err) {
-      console.error("Login Error:", err);
-      const serverMessage = err.response?.data?.error || err.message;
-      setError(`Login failed: ${serverMessage}. Ensure your backend and MongoDB are running.`);
+      console.error("Manual Login Error:", err);
+      setError("Login failed: " + err.message); // Firebase will say if password is wrong
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
-  };
-
-  const handleError = () => {
-    setError('Google sign-in failed. Please try again.');
   };
 
   return (
@@ -111,20 +135,20 @@ export const LoginPage = () => {
             type="email" 
             placeholder="Email Address" 
             id="email_capture" 
-            name="email" 
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
+            disabled={loading}
           />
           
           <input 
             type="password" 
             placeholder="Password" 
             id="password_capture" 
-            name="password" 
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            required
+            disabled={loading}
           />
           
           <button type="submit" id="sign_in_button" disabled={loading}>
@@ -133,7 +157,7 @@ export const LoginPage = () => {
         </form>
 
         <p className="create-account-prompt">
-          Don't have an account? <a href="/signup">Create one</a>.
+          Don't have an account? <Link to="/signup">Create one</Link>.
         </p>
 
         <hr className="smaller-login-divider" />
@@ -145,17 +169,16 @@ export const LoginPage = () => {
               Signing you in…
             </p>
           ) : (
-            <GoogleLogin
-              onSuccess={handleSuccess}
-              onError={handleError}
-              useOneTap
-              theme="outline"
-              size="large"
-              text="continue_with"
-              shape="rectangular"
-              logo_alignment="left"
-              width="320"
-            />
+            <button 
+              type="button" 
+              onClick={handleGoogleLogin} 
+              disabled={loading}
+              className="google-login-button"
+              style={{ width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #ccc', backgroundColor: '#fff', cursor: 'pointer' }}
+            >
+              <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style={{ width: '20px', verticalAlign: 'middle', marginRight: '10px' }}/>
+              Continue with Google
+            </button>
           )}
         </section>
 

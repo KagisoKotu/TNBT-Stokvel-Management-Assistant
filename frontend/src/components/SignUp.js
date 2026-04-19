@@ -1,27 +1,81 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import './SignUp.css'
 
+import { auth } from '../services/firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
+
 export const SignUp = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-    const getValues = () => {
-    const form = document.getElementById('signup-form');
+  // 1. Create references for your inputs
+  const nameRef = useRef();
+  const surnameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            let name = document.getElementById('name_capture').value;
-            let surname = document.getElementById('surname_capture').value;
-            let email = document.getElementById('email_capture').value;
-            let password = document.getElementById('password_capture').value;
-            let confirmPassword = document.getElementById('confirm_password_capture').value;
+  const handleSignup = async (e) => {
+    e.preventDefault(); // Stop the page from refreshing
+    setError('');
 
-            if (password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
-        });
-}
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const confirmPassword = confirmPasswordRef.current.value;
+    const name = nameRef.current.value;
+    const surname = surnameRef.current.value;
+
+    // 2. Validation
+    if (password !== confirmPassword) {
+      setError('Passwords do not match!');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 3. Firebase Auth (Creates the "Identity")
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const idToken = await user.getIdToken();
+
+      // 4. MongoDB Handshake (Creates the "Profile")
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          token: idToken,
+          name: name,    // Crucial: Firebase doesn't know their name yet
+          surname: surname, 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store user info for the UI
+        localStorage.setItem('token', idToken);
+        localStorage.setItem('role', data.user.role); 
+        navigate('/home', { replace: true });
+      } else {
+        throw new Error(data.message || 'Database sync failed');
+      }
+     } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="signup-page">
+
+        <span aria-hidden="true" className="signup-bg-stripe"></span>
+        <span aria-hidden="true" className="signup-bg-circle1"></span>
+        <span aria-hidden="true" className="signup-bg-circle2"></span>
 
         <article className="signup-card">
         <header className="signup-logo-row">
@@ -39,22 +93,29 @@ export const SignUp = () => {
 
         <hr className="signup-divider" />
 
-        <form id="signup-form" action="/google" method="POST">
-          <input type="text" placeholder="Name" id="name_capture" name="name" required/>
-          <input type="text" placeholder="Surname" id="surname_capture" name="surname" required/>
-          <input type="email" height="1900px" placeholder="Email Address" id="email_capture" name="email" required/>
-          <input type="password" placeholder="Password" id="password_capture" name="password" required/>
-          <input type="password" placeholder="Confirm Password" id="confirm_password_capture" name="confirm_password" required/>
-          
-          <hr className="signup-divider" />
+        <form id="signup-form" onSubmit={handleSignup}>
+        
+        <input ref={nameRef} type="text" placeholder="Name" id="name_capture" required/>
+        <input ref={surnameRef} type="text" placeholder="Surname" id="surname_capture" required/>
+        
+        {/* Note: removed height="1900px" as that's massive for an input! */}
+        <input ref={emailRef} type="email" placeholder="Email Address" id="email_capture" required/>
+        
+        <input ref={passwordRef} type="password" placeholder="Password" id="password_capture" required/>
+        <input ref={confirmPasswordRef} type="password" placeholder="Confirm Password" id="confirm_password_capture" required/>
+        
+        <hr className="signup-divider" />
 
-          <button type="submit" id="sign_up_button">Create Account</button>
+        {error && <p className="error-message" style={{color: 'red'}}>{error}</p>}
 
-           <p className="create-account-prompt">
+        <button type="submit" id="sign_up_button" disabled={loading}>
+          {loading ? 'Processing...' : 'Create Account'}
+        </button>
+
+        <p className="create-account-prompt">
           Already have an account? <a href="/">Sign in</a>.
         </p>
-
-        </form>
+      </form>
         </article>
 
     </main>

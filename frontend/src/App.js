@@ -17,6 +17,7 @@ import PostAgendas from './Dashboard/PostAgendas';
 function App() {
   const handleLogout = () => {
     sessionStorage.clear();
+    //window.location.hash = '#/';
     window.location.href = '/';
   };
 
