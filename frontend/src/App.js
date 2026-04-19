@@ -11,15 +11,12 @@ import AdminDashboard from './Dashboard/AdminDashboard';
 import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
 import MemberDashboard from './Dashboard/MemberDashboard';
 import MeetingManagerDashboard from './Dashboard/MeetingManagerDashboard';
-<<<<<<< HEAD
+
 import ScheduleMeeting from './Dashboard/ScheduleMeeting';
 import GroupManagement from './Dashboard/GroupManagement';
-import PostAgendas from './Dashboard/PostAgendas'; 
-=======
-import ScheduleMeeting from './Dashboard/ScheduleMeeting'; 
-
+import PostAgendas from './Dashboard/PostAgendas';
 import { RecordMinutes } from './Dashboard/RecordMinutes';
->>>>>>> 16c6d6e862ccb7ca13914ed36fe09ca731832fab
+
 
 function App() {
   const handleLogout = () => { 
