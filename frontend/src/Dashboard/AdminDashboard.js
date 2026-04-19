@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
+<<<<<<< HEAD
 import { useNavigate ,useParams} from 'react-router-dom';
+=======
+import { useNavigate, useParams } from 'react-router-dom';
+>>>>>>> 16c6d6e862ccb7ca13914ed36fe09ca731832fab
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
@@ -16,7 +20,7 @@ const AdminDashboard = ({ user, onLogout }) => {
   };
 
   const goToMeetingManager = () => {
-    navigate('/meeting-manager');
+    navigate(`/meeting-manager/${groupId}`);
   };
 
   return (
