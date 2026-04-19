@@ -8,39 +8,33 @@ export const LoginPage = () => {
   const navigate = useNavigate();
 
   // ==========================================
-  // 🧹 THE CLEANUP SQUAD: Runs immediately when page loads
+  // 🧹 THE CLEANUP SQUAD
   // ==========================================
   useEffect(() => {
-    // 1. Wipe the token
     localStorage.removeItem('token');
-    
-    // 2. Wipe the team member's user data
     sessionStorage.removeItem('user');
-    
-    // 3. Tell Firebase to officially sign the user out
     signOut(auth).catch((error) => {
       console.error("Error signing out of Firebase:", error);
     });
-  }, []); // The empty array [] means this runs ONCE when the page first appears
-  
-  // State for manual login inputs
+  }, []); 
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
-  // State to hold the manual email/password typing
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   // ==========================================
   // 1. THE HELPER: Talks to your Backend
   // ==========================================
   const syncWithBackend = async (firebaseToken, firstName='', lastName='') => {
-    const response = await fetch('http://localhost:5000/api/auth/register', {
+    //following code fixes the issue of VITE_API_URL not being defined in production builds by checking both environment variable styles and falling back to localhost
+    const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+    const response = await fetch(`${apiUrl}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: firebaseToken,
+      body: JSON.stringify({ 
+        token: firebaseToken,
         name: firstName,
         surname: lastName
       }),
@@ -50,9 +44,7 @@ export const LoginPage = () => {
 
     if (response.ok) {
       localStorage.setItem('token', firebaseToken);
-      // ✨ ADD THIS LINE: Save the user data for your team member's UI ✨
       sessionStorage.setItem('user', JSON.stringify(data.user));
-      // Optional: localStorage.setItem('role', data.user.role);
       navigate('/home');
     } else {
       throw new Error(data.message || 'Server rejected login');
@@ -69,16 +61,13 @@ export const LoginPage = () => {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
 
-      // ✨ 1. Open the raw Google JSON object
       const details = getAdditionalUserInfo(result);
       const googleFirstName = details.profile.given_name;
       const googleLastName = details.profile.family_name;
 
-      // 2. Grab the secure Firebase Token
       const token = await result.user.getIdToken();
       
-      
-      await syncWithBackend(token, googleFirstName, googleLastName); // Send token to backend
+      await syncWithBackend(token, googleFirstName, googleLastName); 
     } catch (err) {
       console.error("Google Login Error:", err);
       setError("Google Login failed: " + err.message);
@@ -91,17 +80,17 @@ export const LoginPage = () => {
   // 3. MANUAL LOGIN METHOD
   // ==========================================
   const handleManualLogin = async (e) => {
-    e.preventDefault(); // Stops the page from refreshing when you submit the form
+    e.preventDefault(); 
     setError('');
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();
       
-      await syncWithBackend(token); // Send token to backend
+      await syncWithBackend(token); 
     } catch (err) {
       console.error("Manual Login Error:", err);
-      setError("Login failed: " + err.message); // Firebase will say if password is wrong
+      setError("Login failed: " + err.message); 
     } finally {
       setLoading(false);
     }
