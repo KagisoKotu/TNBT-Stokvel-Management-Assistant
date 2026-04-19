@@ -11,15 +11,15 @@ const stokvelRoutes = require('./routes/stokvelRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoutes');
 const usersRoutes = require('./routes/usersRoutes');
+const meetingRoutes = require('./routes/meetingRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');  // ← move all imports to top
 
 const app = express();
 
 // --- Middleware ---
-app.use(cors()); // Allows frontend (3000) to talk to backend (5000)
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-app.use('/api/auth', authRoutes); // Ensure auth routes are registered before any protected routes
 
 // Request Logger
 app.use((req, res, next) => {
@@ -38,45 +38,40 @@ const connectionOptions = {
 mongoose.connect(process.env.MONGO_URI, connectionOptions)
     .then(() => {
         console.log('Connected to Stokvel MongoDB');
-
-        // --- TEMPORARY FIX: DROP THE BAD INDEX ---
-        // This runs once when the server starts to clear the 'duplicate null' error
         const dropOldIndex = async () => {
             try {
-                // Access the underlying MongoDB driver to drop the index directly
                 await mongoose.connection.db.collection('users').dropIndex('googleId_1');
-                console.log('SUCCESS: Old googleId index dropped! Multiple users can now sign in.');
+                console.log('SUCCESS: Old googleId index dropped!');
             } catch (err) {
                 if (err.message.includes('not found')) {
-                    console.log('Index Status: Old index already gone. Your database is clean.');
+                    console.log('Index Status: Old index already gone.');
                 } else {
                     console.log('Index Note:', err.message);
                 }
             }
         };
         dropOldIndex();
-        // --- END TEMPORARY FIX ---
     })
     .catch(err => {
         console.error('Database Connection Error:', err.message);
     });
 
-
+// --- Routes ---
+app.use('/api/auth', authRoutes);       // ← only registered ONCE
 app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
-app.use('/api/meetings', require('./routes/meetingRoutes'));
+app.use('/api/meetings', meetingRoutes);           // ← only ONCE
+app.use('/api/notifications', notificationRoutes); // ← yours
 
 app.get('/', (req, res) => {
     res.send('Stokvel Assistant API is running!');
 });
 
 app.listen(PORT, () => {
-    console.log(`🚀 Server listening at http://localhost:${PORT}`);
+    console.log(`Server listening at http://localhost:${PORT}`);
 });
 
-//for firebase admin sdk
 const admin = require('firebase-admin');
 const serviceAccount = require("./serviceAccountKey");
 
