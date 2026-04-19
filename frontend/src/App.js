@@ -10,10 +10,11 @@ import AdminDashboard from './Dashboard/AdminDashboard';
 import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
 import MemberDashboard from './Dashboard/MemberDashboard';
 import MeetingManagerDashboard from './Dashboard/MeetingManagerDashboard';
-import ScheduleMeeting from './Dashboard/ScheduleMeeting'; 
+import ScheduleMeeting from './Dashboard/ScheduleMeeting';
+import GroupManagement from './Dashboard/GroupManagement';
 
 function App() {
-  const handleLogout = () => {
+  const handleLogout = () => { 
     sessionStorage.clear();
     window.location.href = '/';
   };
@@ -36,6 +37,8 @@ function App() {
           <Route path="/meeting-manager" element={<MeetingManagerDashboard />} />
           <Route path="/schedule" element={<ScheduleMeeting />} />
           
+          <Route path="/manage-group/:groupId" element={<GroupManagement />} />
+
           {/* Dashboard Routes */}
           <Route 
             path="/admin-dashboard/:groupId" 

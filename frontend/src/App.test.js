@@ -1,19 +1,19 @@
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom'; 
 import App from './App';
+import { TextEncoder, TextDecoder } from 'util';
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 jest.mock('@react-oauth/google', () => ({
-  GoogleLogin: () => <div>Google Login Mock</div>,
+  GoogleLogin: () => <button type="button">Google Login Mock</button>,
   useGoogleLogin: () => ({ login: jest.fn() }),
-}));
+  }));
 
 test('renders the StokvelStokkie logo text', () => {
-  render(
-    <MemoryRouter>
-      <App />
-    </MemoryRouter>
-  );
-  
-  const logoElement = screen.getByText(/StokvelStokkie/i); 
+render(<App />);
+
+  const logoElement = screen.getByText(/StokvelStokkie/i, { selector: 'span' });
   expect(logoElement).toBeInTheDocument();
+
 });

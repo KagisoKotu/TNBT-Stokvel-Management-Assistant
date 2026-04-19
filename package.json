@@ -19,7 +19,17 @@
     "express": "^5.2.1",
     "mongoose": "^9.4.1",
     "nodemailer": "^8.0.5"
+  },
+
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!src/index.js",
+      "!src/reportWebVitals.js"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ]
   }
-
-
 }

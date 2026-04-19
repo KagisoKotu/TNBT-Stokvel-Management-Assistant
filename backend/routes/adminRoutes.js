@@ -1,19 +1,69 @@
 const express = require('express');
 const router = express.Router();
+const Member = require('../models/Member');
+const Group = require('../models/Group');
 
-// Placeholder for Developer 2's middleware
-// const { verifyToken, verifyAdmin } = require('../middleware/authMiddleware');
+// 1. GET Members with normalized name matching
+router.get('/:groupId/members', async (req, res) => {
+    try {
+        const group = await Group.findById(req.params.groupId);
+        if (!group) return res.status(404).json({ message: "Group not found" });
 
-// Route: GET /api/admin/dashboard
-// Later, you will add the middleware here: router.get('/dashboard', verifyToken, verifyAdmin, ...);
-router.get('/dashboard', (req, res) => {
-  res.status(200).json({ message: 'Welcome to the Admin Dashboard' });
+        const membersWithNames = await Member.aggregate([
+            { $match: { group: group.groupName } },
+            {
+                $lookup: {
+                    from: 'users',
+                    let: { mEmail: { $trim: { input: { $toLower: "$user" } } } },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $eq: [{ $trim: { input: { $toLower: "$email" } } }, "$$mEmail"]
+                                }
+                            }
+                        }
+                    ],
+                    as: 'uDetails'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    memberType: 1,
+                    joiningDate: 1,
+                    userEmail: '$user', 
+                    displayName: { 
+                        $ifNull: [{ $arrayElemAt: ['$uDetails.name', 0] }, '$user'] 
+                    }
+                }
+            }
+        ]);
+        res.status(200).json({ group, members: membersWithNames });
+    } catch (err) {
+        res.status(500).json({ message: "Server Error" });
+    }
 });
 
-// Route: POST /api/admin/manage-users
-router.post('/manage-users', (req, res) => {
-  // Logic to manage users
-  res.status(200).json({ message: 'User management endpoint hit' });
+// 2. DELETE Member
+router.delete('/:groupId/member/:memberId', async (req, res) => {
+    try {
+        const { groupId, memberId } = req.params;
+        const group = await Group.findById(groupId);
+        
+        if (!group) return res.status(404).json({ message: "Group not found" });
+
+        const deletedMember = await Member.findOneAndDelete({ 
+            _id: memberId, 
+            group: group.groupName 
+        });
+
+        if (!deletedMember) return res.status(404).json({ message: "Member not found" });
+
+        res.status(200).json({ message: "Member successfully removed" });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to delete member" });
+    }
 });
 
 module.exports = router;

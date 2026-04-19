@@ -11,6 +11,7 @@ const stokvelRoutes = require('./routes/stokvelRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoutes');
 const usersRoutes = require('./routes/usersRoutes');
+const managegroupRoutes = require('./routes/managegroupRoutes');
 
 const app = express();
 
@@ -64,6 +65,7 @@ app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/managegroup', managegroupRoutes);
 
 app.get('/', (req, res) => {
     res.send('Stokvel Assistant API is running!');
