@@ -41,7 +41,7 @@ function App() {
           
           {/* Navigation Target */}
           <Route path="/meeting-manager/:groupId" element={<MeetingManagerDashboard />} />
-          <Route path="/schedule" element={<ScheduleMeeting />} />
+          <Route path="/schedule/:groupId" element={<ScheduleMeeting />} />
           
           <Route path="/manage-group/:groupId" element={<GroupManagement />} />
 
