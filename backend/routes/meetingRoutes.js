@@ -64,7 +64,6 @@ router.post('/schedule', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 // GET /meetings — fetch all meetings
 router.get('/', async (req, res) => {
   try {
