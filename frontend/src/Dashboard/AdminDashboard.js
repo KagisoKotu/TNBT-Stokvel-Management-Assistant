@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { groupId } = useParams();
 
   const handleBack = () => {
     navigate('/home'); 
   };
 
   const goToMeetingManager = () => {
-    navigate('/meeting-manager');
+    navigate(`/meeting-manager/${groupId}`);
   };
 
   return (

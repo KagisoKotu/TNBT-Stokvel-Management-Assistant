@@ -88,7 +88,7 @@ const MeetingManagerDashboard = () => {
           <ul>
             <li><Link to={`/schedule/${groupId}`} onClick={() => setIsMenuOpen(false)}>Schedule Meeting</Link></li>
             <li><Link to={`/post-agenda/${groupId}`} onClick={() => setIsMenuOpen(false)}>Post Agendas</Link></li>
-            <li><Link to={`/record-minutes/${groupId}`} onClick={() => setIsMenuOpen(false)}>Record Minutes</Link></li>
+            <li><Link to={`/admin/record-minutes/${groupId}`} onClick={() => setIsMenuOpen(false)}>Record Minutes</Link></li>
           </ul>
         </nav>
       </aside>

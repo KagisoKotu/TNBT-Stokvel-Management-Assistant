@@ -159,6 +159,6 @@ const PostAgendas = () => {
       </article>
     </section>
   );
-};
+}
 
 export default PostAgendas;
