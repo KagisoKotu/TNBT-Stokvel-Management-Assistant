@@ -20,6 +20,8 @@ app.use(cors()); // Allows frontend (3000) to talk to backend (5000)
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.use('/api/auth', authRoutes); // Ensure auth routes are registered before any protected routes
+
 // Request Logger
 app.use((req, res, next) => {
     console.log(`${req.method} request received at ${req.url}`);
@@ -60,19 +62,28 @@ mongoose.connect(process.env.MONGO_URI, connectionOptions)
         console.error('Database Connection Error:', err.message);
     });
 
-// --- Routes ---
+
 app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/managegroup', managegroupRoutes);
+app.use('/api/meetings', require('./routes/meetingRoutes'));
 
 app.get('/', (req, res) => {
     res.send('Stokvel Assistant API is running!');
 });
 
-// Start Server
 app.listen(PORT, () => {
-    console.log(`Server listening at http://localhost:${PORT}`);
+    console.log(`🚀 Server listening at http://localhost:${PORT}`);
 });
-module.exports = app;
+
+//for firebase admin sdk
+const admin = require('firebase-admin');
+const serviceAccount = require("./serviceAccountKey");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+module.exports = admin;

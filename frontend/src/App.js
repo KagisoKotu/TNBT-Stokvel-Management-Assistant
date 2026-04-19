@@ -5,6 +5,7 @@ import CreateGroup from './components/Creategroup';
 import './App.css';
 import { LoginPage } from './components/Login';
 import { SignUp } from './components/SignUp';
+import { PostAgenda } from './components/PostAgendas';
 
 import AdminDashboard from './Dashboard/AdminDashboard'; 
 import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
@@ -12,10 +13,12 @@ import MemberDashboard from './Dashboard/MemberDashboard';
 import MeetingManagerDashboard from './Dashboard/MeetingManagerDashboard';
 import ScheduleMeeting from './Dashboard/ScheduleMeeting';
 import GroupManagement from './Dashboard/GroupManagement';
+import PostAgendas from './Dashboard/PostAgendas'; 
 
 function App() {
   const handleLogout = () => { 
     sessionStorage.clear();
+    //window.location.hash = '#/';
     window.location.href = '/';
   };
 
@@ -34,8 +37,8 @@ function App() {
           <Route path="/create-group" element={<CreateGroup />} />
           
           {/* Navigation Target */}
-          <Route path="/meeting-manager" element={<MeetingManagerDashboard />} />
-          <Route path="/schedule" element={<ScheduleMeeting />} />
+          <Route path="/meeting-manager/:groupId" element={<MeetingManagerDashboard />} />
+          <Route path="/schedule/:groupId" element={<ScheduleMeeting />} />
           
           <Route path="/manage-group/:groupId" element={<GroupManagement />} />
 
@@ -52,6 +55,12 @@ function App() {
             path="/member-dashboard/:groupId" 
             element={<MemberDashboard user={user} onLogout={handleLogout} />} 
           />
+
+          {/* Post Agendas Route */}
+          <Route 
+            path="/post-agenda/:groupId"
+            element={<PostAgendas />} 
+          /> 
         </Routes>
       </main>
     </Router>

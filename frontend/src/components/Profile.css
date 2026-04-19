@@ -1,0 +1,293 @@
+.profile-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.profile-cover {
+  background: linear-gradient(135deg, #004aad 0%, #0062e3 100%);
+  height: 120px;
+  position: relative;
+}
+
+.profile-avatar {
+  position: absolute;
+  bottom: -50px;
+  left: 30px;
+  margin: 0;
+}
+
+.profile-avatar figcaption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.avatar-large {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #ffde59;
+  border: 4px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: bold;
+  color: #004aad;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info {
+  padding: 60px 30px 30px 30px;
+}
+
+.profile-header-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 8px 0;
+}
+
+.profile-role {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.role-admin {
+  background: #ff4757;
+  color: white;
+}
+
+.role-treasurer {
+  background: #ffa502;
+  color: white;
+}
+
+.role-member {
+  background: #1e90ff;
+  color: white;
+}
+
+menu {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  list-style: none;
+}
+
+.btn-edit, .btn-logout, .btn-cancel, .btn-save {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-edit {
+  background: #004aad;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #003d8a;
+}
+
+.btn-logout {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-logout:hover {
+  background: #fecaca;
+}
+
+.btn-cancel {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.btn-save {
+  background: #10b981;
+  color: white;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-save:hover {
+  background: #059669;
+}
+
+.message {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.message.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.message.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.profile-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+
+.detail-section {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.detail-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+dl {
+  margin: 0;
+}
+
+dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 12px;
+}
+
+dt:first-of-type {
+  margin-top: 0;
+}
+
+dd {
+  font-size: 16px;
+  color: #1a202c;
+  margin: 4px 0 0 0;
+}
+
+.profile-edit-form {
+  margin-top: 1.5rem;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+legend {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a5568;
+  margin-top: 1rem;
+  margin-bottom: 6px;
+}
+
+label:first-of-type {
+  margin-top: 0;
+}
+
+input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: #004aad;
+  box-shadow: 0 0 0 3px rgba(0, 74, 173, 0.1);
+}
+
+.disabled-input {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+small {
+  display: block;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .profile-info {
+    padding: 60px 20px 20px 20px;
+  }
+  
+  .profile-header-actions {
+    flex-direction: column;
+  }
+  
+  menu {
+    width: 100%;
+  }
+  
+  menu li {
+    flex: 1;
+  }
+  
+  menu li button {
+    width: 100%;
+  }
+}
