@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './MeetingManagerDashboard.css';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 
 const MeetingManagerDashboard = () => {
+  const { groupId } = useParams(); // Get the groupId from the URL parameters
+  console.log("REACT IS SEEING THIS ID:", groupId);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [displayedDate, setDisplayedDate] = useState(new Date());
   const [meetings, setMeetings] = useState([]); 
@@ -84,9 +86,9 @@ const MeetingManagerDashboard = () => {
             <button type="button" className="close-btn" onClick={() => setIsMenuOpen(false)}>×</button>
           </header>
           <ul>
-            <li><Link to="/schedule" onClick={() => setIsMenuOpen(false)}>Schedule Meeting</Link></li>
-            <li><a href="#agendas">Post Agendas</a></li>
-            <li><a href="#minutes">Record Minutes</a></li>
+            <li><Link to={`/schedule/${groupId}`} onClick={() => setIsMenuOpen(false)}>Schedule Meeting</Link></li>
+            <li><Link to={`/post-agenda/${groupId}`} onClick={() => setIsMenuOpen(false)}>Post Agendas</Link></li>
+            <li><Link to={`/record-minutes/${groupId}`} onClick={() => setIsMenuOpen(false)}>Record Minutes</Link></li>
           </ul>
         </nav>
       </aside>

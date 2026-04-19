@@ -9,43 +9,73 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // State to hold the manual email/password typing
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleSuccess = async (credentialResponse) => {
+  // ==========================================
+  // DOOR 1: THE MANUAL LOGIN DOOR
+  // ==========================================
+  const handleManualLogin = async (e) => {
+    e.preventDefault(); 
     setLoading(true);
     setError('');
+
     try {
-      const clientDetails = jwtDecode(credentialResponse.credential);
-      
-      // --- NEW SMART URL LOGIC ---
-      // This automatically swaps between your live Render URL on Vercel and localhost on your laptop.
       const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
       
-      // 2. The Handshake: Send to Backend
-      const response = await fetch(`${apiUrl}/auth/google-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          token: credentialResponse.credential 
-        }),
-      });
+      const userData = { email, password };
 
-      console.log("Attempting login with data:", userData);
-
-      // Sending data to the backend
-      const response = await axios.post('http://localhost:5000/api/auth/google', userData);
+      // Send to the Standard Login Endpoint
+      const response = await axios.post(`${apiUrl}/auth/login`, userData);
 
       if (response.status === 200) {
         sessionStorage.setItem('user', JSON.stringify(response.data.user));
         navigate('/home', { replace: true });
       }
     } catch (err) {
-      console.error("Login Error:", err);
+      console.error("Manual Login Error:", err);
+      const serverMessage = err.response?.data?.error || err.message;
+      setError(`Login failed: ${serverMessage}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ==========================================
+  // DOOR 2: THE GOOGLE LOGIN DOOR
+  // ==========================================
+  const handleSuccess = async (credentialResponse) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      // 1. Decode the token on the frontend (Your teammate's correct logic!)
+      const clientDetails = jwtDecode(credentialResponse.credential);
       
-      // UPDATED: Improved error message to show exactly what the backend complained about
+      // 2. Package it exactly how AuthRoutes.js asked for it
+      const userData = {
+        email: clientDetails.email,
+        name: clientDetails.given_name,
+        surname: clientDetails.family_name || ""
+      };
+      
+      const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+      // 3. Send to the /auth/google endpoint
+      const googleResponse = await axios.post(`${apiUrl}/auth/google`, userData);
+
+      if (googleResponse.status === 200) {
+        sessionStorage.setItem('user', JSON.stringify(googleResponse.data.user));
+        navigate('/home', { replace: true });
+      }
+    } catch (err) {
+      console.error("Login Error:", err);
       const serverMessage = err.response?.data?.error || err.message;
       setError(`Login failed: ${serverMessage}. Ensure your backend and MongoDB are running.`);
-      
-      setLoading(false);
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -76,12 +106,30 @@ export const LoginPage = () => {
 
         <hr className="login-divider" />
 
-        <form action="/google" method="POST">
-          <input type="email" height="1900px" placeholder="Email Address" id="email_capture" name="email" required/>
+        <form onSubmit={handleManualLogin}>
+          <input 
+            type="email" 
+            placeholder="Email Address" 
+            id="email_capture" 
+            name="email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
           
-          <input type="password" placeholder="Password" id="password_capture" name="password" required/>
+          <input 
+            type="password" 
+            placeholder="Password" 
+            id="password_capture" 
+            name="password" 
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           
-          <button type="submit" id="sign_in_button">Sign In</button>
+          <button type="submit" id="sign_in_button" disabled={loading}>
+            {loading ? 'Signing In...' : 'Sign In'}
+          </button>
         </form>
 
         <p className="create-account-prompt">
@@ -89,7 +137,6 @@ export const LoginPage = () => {
         </p>
 
         <hr className="smaller-login-divider" />
-
 
         <section className="login-google-wrapper" aria-label="Sign in options">
           {loading ? (
@@ -140,7 +187,6 @@ export const LoginPage = () => {
           </p>
           <ul className="login-stats-list" aria-label="Platform statistics">
             {[
-              //maybe these stats can be dynamically fetched from the backend in the future as part the tracking?
               { value: 'R0+', label: 'Managed monthly' },
               { value: '6+', label: 'Active members' },
               { value: '2%', label: 'Payout accuracy' },
