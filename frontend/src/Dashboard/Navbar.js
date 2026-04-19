@@ -79,7 +79,7 @@ function Navbar() {
         </nav>
       </aside>
 
-      {/* Semantic Backdrop using a section acting as a shroud */}
+      {}
       {(isOpen || isDropdownOpen) && (
         <section 
           className="overlay" 

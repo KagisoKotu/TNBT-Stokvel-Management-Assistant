@@ -84,7 +84,6 @@ button {
   color: #714b9d;
 }
 
-/* --- Content Header (Title & Button) --- */
 .content-header {
   display: flex;
   justify-content: space-between;
@@ -102,7 +101,6 @@ button {
   font-weight: 600;
 }
 
-/* --- Groups Grid --- */
 .groups-display-container {
   max-width: 1100px;
   margin: 0 auto;
@@ -132,7 +130,6 @@ button {
   padding: 20px;
 }
 
-/* --- Tile Options & Remove Fix --- */
 .tile-actions {
   position: absolute;
   bottom: 15px;
@@ -167,7 +164,6 @@ button {
   white-space: nowrap;
 }
 
-/* --- Bottom Nav --- */
 .nav-container {
   position: fixed;
   bottom: 20px;

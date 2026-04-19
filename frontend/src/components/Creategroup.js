@@ -89,7 +89,6 @@ const CreateGroup = () => {
         return;
       }
 
-      // Updated payload to use Emails as Strings to match your new Schema approach
       const payload = {
         groupName: formData.groupName,
         adminId: loggedInUser.email, 
