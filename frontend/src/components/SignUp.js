@@ -42,7 +42,7 @@ export const SignUp = () => {
       const idToken = await user.getIdToken();
 
       // SMART URL LOGIC: Automatically switches between local testing and live deployment(before signup was hardcoded to localhost:5000/api)
-      const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+      const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
 
       // 4. MongoDB Handshake (Creates the "Profile") using the smart URL
       const response = await fetch(`${apiUrl}/auth/register`, {

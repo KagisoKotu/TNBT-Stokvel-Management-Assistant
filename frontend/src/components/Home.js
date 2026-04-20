@@ -27,7 +27,7 @@ const Home = () => {
       try {
         if (loggedInUser && loggedInUser.email) {
           // SMART URL LOGIC: dynamically switches between local testing and Render live server
-          const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+          const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
           
           // Fetch groups where this specific user is a member
           const response = await axios.get(`${apiUrl}/stokvel/user/${loggedInUser.email}`);

@@ -36,7 +36,7 @@ export const LoginPage = () => {
   const syncWithBackend = async (firebaseToken, firstName='', lastName='') => {
     
     // SMART URL LOGIC: Automatically switches between local testing and live deployment
-    const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
 
     // Send the Firebase token and name data to your backend's auth route
     const response = await fetch(`${apiUrl}/auth/register`, {

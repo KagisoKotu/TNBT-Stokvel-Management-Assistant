@@ -11,7 +11,7 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
   const [message, setMessage] = useState({ type: '', text: '' });
 
   // SMART URL LOGIC: Automatically switches between local testing and live deployment
-  const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
 
   // Mock data for initial display
   const getMockMembers = () => {

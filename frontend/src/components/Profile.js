@@ -11,6 +11,9 @@ const Profile = ({ user = {}, onLogout = () => {}, onUpdate = () => {} }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  // Add the emergency Render URL right here at the top of the component!
+  const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -20,7 +23,8 @@ const Profile = ({ user = {}, onLogout = () => {}, onUpdate = () => {} }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
       
-      const response = await fetch('/api/users/profile', {
+      // Update this fetch call to use apiUrl
+      const response = await fetch(`${apiUrl}/users/profile`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -55,7 +59,8 @@ const Profile = ({ user = {}, onLogout = () => {}, onUpdate = () => {} }) => {
         return;
       }
 
-      const response = await fetch('/api/users/profile', {
+      // Update this fetch call to use apiUrl
+      const response = await fetch(`${apiUrl}/users/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
