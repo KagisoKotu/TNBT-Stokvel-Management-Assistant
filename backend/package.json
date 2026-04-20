@@ -1,9 +1,6 @@
 {
-  "homepage": "https://kagisokotu.github.io/TNBT-Stokvel-Management-Assistant",
   "scripts": {
     "start": "node server.js",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
     "dev": "nodemon server.js",
     "test": "jest",
     "test:coverage": "jest --coverage --passWithNoTests"
