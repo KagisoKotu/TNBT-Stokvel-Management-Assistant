@@ -163,6 +163,6 @@ const PostAgendas = () => {
       </article>
     </main>
   );
-};
+}
 
 export default PostAgendas;

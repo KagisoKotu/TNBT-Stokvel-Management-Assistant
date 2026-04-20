@@ -5,17 +5,21 @@ import CreateGroup from './components/Creategroup';
 import './App.css';
 import { LoginPage } from './components/Login';
 import { SignUp } from './components/SignUp';
-import { PostAgenda } from './components/PostAgendas';
+//import { PostAgendas } from './Dashboard/PostAgendas';
 
 import AdminDashboard from './Dashboard/AdminDashboard'; 
 import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
 import MemberDashboard from './Dashboard/MemberDashboard';
 import MeetingManagerDashboard from './Dashboard/MeetingManagerDashboard';
+
 import ScheduleMeeting from './Dashboard/ScheduleMeeting';
-import PostAgendas from './Dashboard/PostAgendas'; 
+import GroupManagement from './Dashboard/GroupManagement';
+import PostAgendas from './Dashboard/PostAgendas';
+import { RecordMinutes } from './Dashboard/RecordMinutes';
+
 
 function App() {
-  const handleLogout = () => {
+  const handleLogout = () => { 
     sessionStorage.clear();
     //window.location.hash = '#/';
     window.location.href = '/';
@@ -39,11 +43,19 @@ function App() {
           <Route path="/meeting-manager/:groupId" element={<MeetingManagerDashboard />} />
           <Route path="/schedule/:groupId" element={<ScheduleMeeting />} />
           
+          <Route path="/manage-group/:groupId" element={<GroupManagement />} />
+
           {/* Dashboard Routes */}
           <Route 
             path="/admin-dashboard/:groupId" 
             element={<AdminDashboard user={user} onLogout={handleLogout} />} 
           />
+
+          <Route 
+            path="/admin/record-minutes/:groupId" 
+            element={<RecordMinutes user={user} onLogout={handleLogout} />} 
+          />
+
           <Route 
             path="/treasurer-dashboard/:groupId" 
             element={<TreasurerDashboard user={user} onLogout={handleLogout} />} 
@@ -53,11 +65,7 @@ function App() {
             element={<MemberDashboard user={user} onLogout={handleLogout} />} 
           />
 
-          {/* Post Agendas Route */}
-          <Route 
-            path="/post-agenda/:groupId"
-            element={<PostAgendas />} 
-          /> 
+          
         </Routes>
       </main>
     </Router>

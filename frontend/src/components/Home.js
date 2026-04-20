@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
 import { House, Search, Wallet, Bell, User, ChevronDown, MoreVertical, Trash2 } from 'lucide-react'; 
+import NotificationBell from './NotificationBell';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -11,14 +12,12 @@ const Home = () => {
   const [openMenuId, setOpenMenuId] = useState(null);
   const [loading, setLoading] = useState(true);
 
- 
   const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     const fetchGroups = async () => {
       try {
         if (loggedInUser && loggedInUser.email) {
-          // Fetch groups and the user's specific role in them
           const response = await axios.get(`http://localhost:5000/api/stokvel/user/${loggedInUser.email}`);
           setGroups(response.data);
         }
@@ -31,12 +30,9 @@ const Home = () => {
     fetchGroups();
   }, [loggedInUser?.email]);
 
- 
   const handleGroupClick = (group) => {
-    const role = group.userRole; // This will be 'Admin', 'Treasurer', or 'Member'
-
+    const role = group.userRole;
     console.log(`Navigating to ${role} dashboard for: ${group.groupName}`);
-
     switch (role) {
       case 'Admin':
         navigate(`/admin-dashboard/${group._id}`);
@@ -54,7 +50,6 @@ const Home = () => {
   };
 
   const removeGroup = (id) => {
-    // Basic UI removal
     setGroups(groups.filter(group => group._id !== id));
     setOpenMenuId(null);
   };
@@ -69,9 +64,10 @@ const Home = () => {
       <header className="top-navbar">
         <h1 className="brand-logo">Stockvel Stockie</h1>
         <nav className="top-nav-actions">
-          <button type="button" className="icon-btn" aria-label="Notifications">
-            <Bell size={24} />
-          </button>
+
+          {/* ← YOUR NOTIFICATION BELL REPLACES THE OLD BELL BUTTON */}
+          <NotificationBell userEmail={loggedInUser?.email} />
+
           <details className="profile-dropdown">
             <summary className="profile-summary">
               <User size={24} />
@@ -118,8 +114,6 @@ const Home = () => {
                       <header className="tile-banner"></header>
                       <section className="tile-content">
                         <h3>{group.groupName}</h3>
-                        
-                        {}
                         <p style={{ 
                           color: '#8b5cf6', 
                           fontWeight: 'bold', 
@@ -128,9 +122,7 @@ const Home = () => {
                         }}>
                           {group.userRole}
                         </p>
-
                         <p>{group.frequency} • R{group.contributionAmount}</p>
-                        
                         <footer className="tile-actions">
                           <button 
                             type="button" 

@@ -6,9 +6,14 @@ const AdminDashboard = ({ user, onLogout }) => {
   const {groupId}  = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const { groupId } = useParams();
 
   const handleBack = () => {
     navigate('/home'); 
+  };
+
+  const goToGroupManagement = () => {
+    navigate(`/manage-group/${groupId}`);
   };
 
   const goToMeetingManager = () => {
@@ -84,7 +89,11 @@ const AdminDashboard = ({ user, onLogout }) => {
       </header>
 
       <section className="tiles-grid">
-        <article className="management-card">
+        <article 
+          className="management-card" 
+          onClick={goToGroupManagement} 
+          style={{ cursor: 'pointer' }}
+        >
           <header className="card-header">
             <h2 className="card-title">Manage Group</h2>
           </header>
