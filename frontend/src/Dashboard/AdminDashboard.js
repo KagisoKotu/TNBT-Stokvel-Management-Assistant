@@ -6,7 +6,6 @@ const AdminDashboard = ({ user, onLogout }) => {
   const {groupId}  = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { groupId } = useParams();
 
   const handleBack = () => {
     navigate('/home'); 

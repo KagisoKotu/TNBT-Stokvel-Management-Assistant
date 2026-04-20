@@ -1,8 +1,28 @@
 const express = require('express');
-const Agenda = require('../models/Agenda'); //point to agenda
 const router = express.Router();
-const Meeting = require('../models/Meeting');
 
+// --- Models ---
+const Agenda = require('../models/Agenda'); 
+const Meeting = require('../models/Meeting');
+const Notification = require('../models/Notification');
+const Member = require('../models/Member');
+
+// --- Email Setup ---
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+
+// ==========================================
+// AGENDA ROUTES
+// ==========================================
+
+// POST /meetings/agenda - Save a new agenda
 router.post('/agenda', async (req, res) => {
   try {
     // 1. Take the data Gomolemo's frontend sent and pour it into the Blueprint
@@ -23,6 +43,7 @@ router.post('/agenda', async (req, res) => {
   }
 });
 
+// GET /meetings/agenda/:groupId - Fetch agendas for a specific group
 router.get('/agenda/:groupId', async (req, res) => {
   try {
     // 1. Grab the VIP wristband (groupId) from the URL
@@ -38,24 +59,10 @@ router.get('/agenda/:groupId', async (req, res) => {
   }
 });
 
-router.post('/schedule', async (req, res) => {
-  try {
-    const newMeeting = new Meeting(req.body);
-    const savedMeeting = await newMeeting.save();
-    res.status(201).json(savedMeeting);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-const Notification = require('../models/Notification');
-const Member = require('../models/Member');
-const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+// ==========================================
+// SCHEDULING & MEETING ROUTES
+// ==========================================
 
 // POST /meetings/schedule — save meeting and notify all group members
 router.post('/schedule', async (req, res) => {
@@ -108,6 +115,7 @@ router.post('/schedule', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 // GET /meetings — fetch all meetings
 router.get('/', async (req, res) => {
   try {
