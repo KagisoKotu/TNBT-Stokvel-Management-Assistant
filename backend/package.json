@@ -1,5 +1,5 @@
 {
-  "homepage": "https://gomolemorampa.github.io/TNBT-Stokvel-Management-Assistant",
+  "homepage": "https://kagisokotu.github.io/TNBT-Stokvel-Management-Assistant",
   "scripts": {
     "start": "node server.js",
     "predeploy": "npm run build",
