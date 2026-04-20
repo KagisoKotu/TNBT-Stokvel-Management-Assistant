@@ -41,8 +41,11 @@ export const SignUp = () => {
       const user = userCredential.user;
       const idToken = await user.getIdToken();
 
-      // 4. MongoDB Handshake (Creates the "Profile")
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      // SMART URL LOGIC: Automatically switches between local testing and live deployment(before signup was hardcoded to localhost:5000/api)
+      const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+      // 4. MongoDB Handshake (Creates the "Profile") using the smart URL
+      const response = await fetch(`${apiUrl}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
