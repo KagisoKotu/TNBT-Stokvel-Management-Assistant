@@ -4,6 +4,9 @@ const NotificationBell = ({ userEmail }) => {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
 
+  // SMART URL LOGIC: Define it once here so all fetch requests can use it
+  const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   useEffect(() => {
@@ -13,8 +16,9 @@ const NotificationBell = ({ userEmail }) => {
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('token');
+      // Replaced localhost with Smart URL
       const res = await fetch(
-        `http://localhost:5000/api/notifications/${userEmail}`,
+        `${apiUrl}/notifications/${userEmail}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();
@@ -27,8 +31,9 @@ const NotificationBell = ({ userEmail }) => {
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem('token');
+      // Replaced localhost with Smart URL
       await fetch(
-        `http://localhost:5000/api/notifications/${id}/read`,
+        `${apiUrl}/notifications/${id}/read`,
         { method: 'PUT', headers: { Authorization: `Bearer ${token}` } }
       );
       setNotifications(prev =>
@@ -42,8 +47,9 @@ const NotificationBell = ({ userEmail }) => {
   const markAllRead = async () => {
     try {
       const token = localStorage.getItem('token');
+      // Replaced localhost with Smart URL
       await fetch(
-        `http://localhost:5000/api/notifications/read-all/${userEmail}`,
+        `${apiUrl}/notifications/read-all/${userEmail}`,
         { method: 'PUT', headers: { Authorization: `Bearer ${token}` } }
       );
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));

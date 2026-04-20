@@ -7,32 +7,50 @@ import NotificationBell from './NotificationBell';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('home');
-  const [groups, setGroups] = useState([]);
-  const [openMenuId, setOpenMenuId] = useState(null);
-  const [loading, setLoading] = useState(true);
+  
+  // ==========================================
+  // 1. STATE MANAGEMENT
+  // ==========================================
+  const [activeTab, setActiveTab] = useState('home'); // Tracks bottom nav bar
+  const [groups, setGroups] = useState([]); // Holds the user's fetched stokvel groups
+  const [openMenuId, setOpenMenuId] = useState(null); // Tracks which group's "3-dot" menu is open
+  const [loading, setLoading] = useState(true); // Shows a loading state before data arrives
 
+  // Grab the currently logged-in user from the session memory
   const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
+  // ==========================================
+  // 2. DATA FETCHING (Runs on component load)
+  // ==========================================
   useEffect(() => {
     const fetchGroups = async () => {
       try {
         if (loggedInUser && loggedInUser.email) {
-          const response = await axios.get(`http://localhost:5000/api/stokvel/user/${loggedInUser.email}`);
+          // SMART URL LOGIC: dynamically switches between local testing and Render live server
+          const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+          
+          // Fetch groups where this specific user is a member
+          const response = await axios.get(`${apiUrl}/stokvel/user/${loggedInUser.email}`);
           setGroups(response.data);
         }
       } catch (err) {
         console.error("Error fetching groups:", err);
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop the loading spinner regardless of success or failure
       }
     };
     fetchGroups();
   }, [loggedInUser?.email]);
 
+  // ==========================================
+  // 3. EVENT HANDLERS
+  // ==========================================
+  
+  // Routes the user to the correct dashboard based on their role in that specific group
   const handleGroupClick = (group) => {
     const role = group.userRole;
     console.log(`Navigating to ${role} dashboard for: ${group.groupName}`);
+    
     switch (role) {
       case 'Admin':
         navigate(`/admin-dashboard/${group._id}`);
@@ -49,13 +67,15 @@ const Home = () => {
     }
   };
 
+  // Removes a group from the UI instantly
   const removeGroup = (id) => {
     setGroups(groups.filter(group => group._id !== id));
     setOpenMenuId(null);
   };
 
+  // Opens/Closes the tiny 3-dot dropdown menu on a group card
   const toggleMenu = (e, id) => {
-    e.stopPropagation(); 
+    e.stopPropagation(); // Prevents clicking the menu from accidentally triggering the handleGroupClick routing
     setOpenMenuId(openMenuId === id ? null : id);
   };
 
@@ -65,7 +85,7 @@ const Home = () => {
         <h1 className="brand-logo">Stockvel Stockie</h1>
         <nav className="top-nav-actions">
 
-          {/* ← YOUR NOTIFICATION BELL REPLACES THE OLD BELL BUTTON */}
+          {/* Our custom Notification Bell Component */}
           <NotificationBell userEmail={loggedInUser?.email} />
 
           <details className="profile-dropdown">
@@ -76,8 +96,8 @@ const Home = () => {
             <ul className="dropdown-menu">
               <li><button type="button">Profile</button></li>
               <li><button type="button" onClick={() => {
-                sessionStorage.clear();
-                navigate('/');
+                sessionStorage.clear(); // Wipe secure data
+                navigate('/'); // Send to login
               }}>Logout</button></li>
             </ul>
           </details>
@@ -98,6 +118,7 @@ const Home = () => {
 
         <section className="groups-display-container">
           <article className={`status-container ${groups.length > 0 ? 'has-grid' : 'is-empty'}`}>
+            {/* Conditional Rendering: Show loading, empty state, or actual data */}
             {loading ? (
               <p className="empty-msg">Loading your groups...</p>
             ) : groups.length === 0 ? (
@@ -154,6 +175,7 @@ const Home = () => {
         </section>
       </main>
 
+      {/* Bottom Navigation */}
       <footer className="nav-container">
         <nav aria-label="Main Menu">
           <ul className="nav-list">
