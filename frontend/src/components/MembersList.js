@@ -10,6 +10,9 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
   const [newMember, setNewMember] = useState({ email: '', name: '', role: 'Member' });
   const [message, setMessage] = useState({ type: '', text: '' });
 
+  // SMART URL LOGIC: Automatically switches between local testing and live deployment
+  const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
   // Mock data for initial display
   const getMockMembers = () => {
     return [
@@ -33,7 +36,8 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
         return;
       }
 
-      const response = await fetch(`/api/admin/members?groupId=${groupId}`, {
+      // Replaced relative path with Smart URL
+      const response = await fetch(`${apiUrl}/admin/members?groupId=${groupId}`, {
         headers: { 
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -56,7 +60,6 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
   const handleAddMember = async (e) => {
     e.preventDefault();
     setMessage({ type: '', text: '' });
-    
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -75,7 +78,8 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
         return;
       }
 
-      const response = await fetch('/api/admin/members', {
+      // Replaced relative path with Smart URL
+      const response = await fetch(`${apiUrl}/admin/members`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +135,8 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
         return;
       }
 
-      const response = await fetch('/api/admin/members/role', {
+      // Replaced relative path with Smart URL
+      const response = await fetch(`${apiUrl}/admin/members/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -166,7 +171,8 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
         return;
       }
 
-      const response = await fetch('/api/admin/members', {
+      // Replaced relative path with Smart URL
+      const response = await fetch(`${apiUrl}/admin/members`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -352,4 +358,21 @@ const MembersList = ({ user = {}, groupId = '', groupName = '' }) => {
                   onChange={(e) => setNewMember({...newMember, role: e.target.value})}
                 >
                   <option value="Member">Member</option>
-                  <option
+                  <option value="Treasurer">Treasurer</option>
+                  <option value="Admin">Admin</option>
+                </select>
+                
+                {/* Fixed the cut-off code by adding the submit button and closing the form tags! */}
+                <button type="submit" className="btn-submit-member">
+                  Add Member
+                </button>
+              </fieldset>
+            </form>
+          </article>
+        </dialog>
+      )}
+    </section>
+  );
+};
+
+export default MembersList;
