@@ -107,7 +107,11 @@ const CreateGroup = () => {
       };
 
       try {
-        await axios.post('http://localhost:5000/api/stokvel', payload);
+                // 1. Add the Smart URL logic right above your fetch/axios call
+        const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+        // 2. Change your POST request to use the dynamic URL
+        const response = await axios.post(`${apiUrl}/stokvel`, groupData);
         alert("Success! Group created and saved.");
         navigate('/home'); 
       } catch (err) {
