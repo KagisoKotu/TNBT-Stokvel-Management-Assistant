@@ -5,7 +5,7 @@ import CreateGroup from './components/Creategroup';
 import './App.css';
 import { LoginPage } from './components/Login';
 import { SignUp } from './components/SignUp';
-//import { PostAgendas } from './Dashboard/PostAgendas';
+
 
 import AdminDashboard from './Dashboard/AdminDashboard'; 
 import TreasurerDashboard from './Dashboard/TreasurerDashboard'; 
@@ -14,7 +14,7 @@ import MeetingManagerDashboard from './Dashboard/MeetingManagerDashboard';
 
 import ScheduleMeeting from './Dashboard/ScheduleMeeting';
 import GroupManagement from './Dashboard/GroupManagement';
-import PostAgendas from './Dashboard/PostAgendas';
+import PostAgendas from './Dashboard/PostAgendas'; // <-- Keeping this one active!
 import { RecordMinutes } from './Dashboard/RecordMinutes';
 
 
@@ -42,8 +42,11 @@ function App() {
           {/* Navigation Target */}
           <Route path="/meeting-manager/:groupId" element={<MeetingManagerDashboard />} />
           <Route path="/schedule/:groupId" element={<ScheduleMeeting />} />
-          
           <Route path="/manage-group/:groupId" element={<GroupManagement />} />
+
+          {/* === 🚨 HERE IS YOUR MISSING ROUTE 🚨 === */}
+          {/* The :groupId tells React to accept any database ID at the end of the URL */}
+          <Route path="/post-agenda/:groupId" element={<PostAgendas />} />
 
           {/* Dashboard Routes */}
           <Route 
@@ -64,7 +67,6 @@ function App() {
             path="/member-dashboard/:groupId" 
             element={<MemberDashboard user={user} onLogout={handleLogout} />} 
           />
-
           
         </Routes>
       </main>
