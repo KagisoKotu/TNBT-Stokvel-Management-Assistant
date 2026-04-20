@@ -17,7 +17,7 @@ const MeetingManagerDashboard = () => {
     const fetchMeetings = async () => {
       try {
         // Points to your Express GET route
-        const res = await axios.get('http://localhost:5000/api/meetings');
+        const res = await axios.get('https://tnbt-stokvel-management-assistant.onrender.com/api');
         setMeetings(res.data);
       } catch (err) {
         console.error("Error fetching meetings from MongoDB:", err);
