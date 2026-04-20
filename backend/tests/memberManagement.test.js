@@ -27,6 +27,7 @@ describe('Admin Member Management API', () => {
         
         // 2. Setup Test User
         await User.create({ 
+            firebaseUid: "test-uid-12345", // <-- Add this required field!
             name: "Alice Zwane", 
             email: "alice@test.com"
         });
