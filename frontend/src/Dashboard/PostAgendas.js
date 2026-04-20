@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css'; // The Quill styling
 import axios from 'axios';
 import './PostAgendas.css';
-import { useParams,useNavigate } from 'react-router-dom'; 
+import { useParams, useNavigate } from 'react-router-dom'; 
 
 const PostAgendas = () => {
   const { groupId } = useParams();
@@ -54,7 +54,6 @@ const PostAgendas = () => {
         agenda: agenda 
       };
 
-
       // Pointing to the correct meetings/agenda route
       const response = await axios.post(`${apiUrl}/meetings/agenda`, agendaData, {
         headers: {
@@ -81,7 +80,8 @@ const PostAgendas = () => {
   };
 
   return (
-    <section className="agenda-page-wrapper">
+    // <main> represents the dominant content of the page
+    <main className="agenda-page-wrapper">
         <button 
             onClick={() => navigate(-1)} 
             style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', marginBottom: '15px' }}
@@ -89,6 +89,7 @@ const PostAgendas = () => {
             ← Back to Dashboard
         </button>
 
+      {/* <article> is perfect for a self-contained widget like a form card */}
       <article className="agenda-form-card">
         <header className="agenda-header">
           <h2>Post Meeting Agenda</h2>
@@ -96,13 +97,15 @@ const PostAgendas = () => {
         </header>
 
         {message && (
-          <div className={`agenda-message ${isError ? 'error' : 'success'}`}>
+          // <output> is semantically designed to show the result of a user action (like a form submission)
+          <output className={`agenda-message ${isError ? 'error' : 'success'}`}>
             {message}
-          </div>
+          </output>
         )}
 
         <form onSubmit={handleSubmit}>
-          <div className="agenda-form-group">
+          {/* <section> represents a standalone thematic grouping, making it a great valid block wrapper */}
+          <section className="agenda-form-group">
             <label htmlFor="title" className="agenda-label">Meeting Title</label>
             <input 
               type="text" 
@@ -113,11 +116,12 @@ const PostAgendas = () => {
               placeholder="e.g., April Monthly Contributions"
               required 
             />
-          </div>
+          </section>
 
-          {/* New Flex Row for Date and Time to sit side-by-side */}
-          <div className="agenda-form-row">
-            <div className="agenda-form-group">
+          {/* <fieldset> is the ultimate semantic tag for grouping related form elements together (like date/time).
+              I added inline style reset so it doesn't add an ugly default border to your flex row */}
+          <fieldset className="agenda-form-row" style={{ border: 'none', padding: 0, margin: 0 }}>
+            <section className="agenda-form-group">
               <label htmlFor="date" className="agenda-label">Date</label>
               <input 
                 type="date" 
@@ -127,8 +131,8 @@ const PostAgendas = () => {
                 onChange={(e) => setDate(e.target.value)} 
                 required 
               />
-            </div>
-            <div className="agenda-form-group">
+            </section>
+            <section className="agenda-form-group">
               <label htmlFor="time" className="agenda-label">Time</label>
               <input 
                 type="time" 
@@ -138,10 +142,10 @@ const PostAgendas = () => {
                 onChange={(e) => setTime(e.target.value)} 
                 required 
               />
-            </div>
-          </div>
+            </section>
+          </fieldset>
 
-          <div className="agenda-form-group">
+          <section className="agenda-form-group">
             <label className="agenda-label">Agenda Items</label>
             <ReactQuill 
               theme="snow" 
@@ -150,14 +154,14 @@ const PostAgendas = () => {
               modules={quillModules}
               placeholder="Type the agenda here. Use the toolbar to format..."
             />
-          </div>
+          </section>
 
           <button type="submit" className="agenda-submit-btn" disabled={loading}>
             {loading ? 'Posting Agenda...' : 'Post Agenda'}
           </button>
         </form>
       </article>
-    </section>
+    </main>
   );
 };
 

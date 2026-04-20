@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useParams} from 'react-router-dom';
 import './AdminDashboard.css';
 
 const AdminDashboard = ({ user, onLogout }) => {
+  const {groupId}  = useParams();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -11,8 +12,10 @@ const AdminDashboard = ({ user, onLogout }) => {
   };
 
   const goToMeetingManager = () => {
-    navigate('/meeting-manager');
+  // Notice we are using backticks ( ` ) instead of quotes now!
+  navigate(`/meeting-manager/${groupId}`);
   };
+
 
   return (
     <main className="dashboard-container">
