@@ -76,7 +76,17 @@ app.listen(PORT, () => {
 });
 
 const admin = require('firebase-admin');
-const serviceAccount = require("./serviceAccountKey");
+
+// Tell the server where to look for the keys
+let serviceAccount;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  // If we are on Render, parse the string from the Environment Variable vault
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+} else {
+  // If we are on your local laptop, look for the physical file
+  serviceAccount = require("./serviceAccountKey.json");
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
