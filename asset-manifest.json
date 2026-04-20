@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/TNBT-Stokvel-Management-Assistant/static/css/main.cd4bd0f6.css",
-    "main.js": "/TNBT-Stokvel-Management-Assistant/static/js/main.c98a35f6.js",
+    "main.js": "/TNBT-Stokvel-Management-Assistant/static/js/main.42a20568.js",
     "static/js/453.825386d9.chunk.js": "/TNBT-Stokvel-Management-Assistant/static/js/453.825386d9.chunk.js",
     "index.html": "/TNBT-Stokvel-Management-Assistant/index.html",
     "main.cd4bd0f6.css.map": "/TNBT-Stokvel-Management-Assistant/static/css/main.cd4bd0f6.css.map",
-    "main.c98a35f6.js.map": "/TNBT-Stokvel-Management-Assistant/static/js/main.c98a35f6.js.map",
+    "main.42a20568.js.map": "/TNBT-Stokvel-Management-Assistant/static/js/main.42a20568.js.map",
     "453.825386d9.chunk.js.map": "/TNBT-Stokvel-Management-Assistant/static/js/453.825386d9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.cd4bd0f6.css",
-    "static/js/main.c98a35f6.js"
+    "static/js/main.42a20568.js"
   ]
 }
