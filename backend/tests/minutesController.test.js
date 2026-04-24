@@ -1,7 +1,7 @@
 // tests/minutesController.test.js
 const { saveMinutes } = require('../controllers/minutesController');
 const Minutes = require('../models/minutes');
-// const User = require('../models/user'); // <-- Make sure you import User if you keep the block below!
+const User = require('../models/user'); // <-- Make sure you import User if you keep the block below!
 
 // Mock the Mongoose model
 jest.mock('../models/minutes');

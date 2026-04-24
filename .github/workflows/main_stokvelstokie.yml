@@ -26,6 +26,8 @@ jobs:
 
     - name: Run Backend Tests & Generate Coverage
       working-directory: ./backend
+      env:
+        MONGO_URI: ${{ secrets.MONGO_TEST_URI }} # <--- ADD THIS!
       run: npm test -- --coverage
 
     # --- 2. TEST THE FRONTEND ---
