@@ -67,7 +67,7 @@ router.get('/agenda/:groupId', async (req, res) => {
 // POST /meetings/schedule — save meeting and notify all group members
 router.post('/schedule', async (req, res) => {
   try {
-    // 1. Save the meeting as before
+    // 1. Save the meeting
     const newMeeting = new Meeting(req.body);
     const savedMeeting = await newMeeting.save();
 
@@ -76,19 +76,26 @@ router.post('/schedule', async (req, res) => {
 
     if (groupMembers && groupMembers.length > 0) {
       for (let member of groupMembers) {
+        
+        // CRITICAL CHECK: 
+        // Make sure 'member.user' is actually the email string. 
+        // If your Member model stores email in 'member.email', change this to member.email
+        const emailToNotify = member.user.toLowerCase(); 
+
         // 3. Save in-app notification for each member
         await Notification.create({
-          recipient: member.user,
+          recipient: emailToNotify, // Matches the lowercase fetch in notificationRoutes.js
           type: 'meeting',
           title: `Meeting Scheduled: ${req.body.meetingTitle}`,
           message: `A meeting has been scheduled for ${req.body.meetingDate} at ${req.body.startTime}. Location: ${req.body.locationType === 'online' ? req.body.meetingLink : req.body.physicalLocation}`,
-          groupId: req.body.groupId
+          groupId: req.body.groupId,
+          isRead: false // Ensuring it starts as unread so the red dot shows up!
         });
 
         // 4. Send email notification
         transporter.sendMail({
           from: process.env.EMAIL_USER,
-          to: member.user,
+          to: emailToNotify,
           subject: `Meeting Scheduled: ${req.body.meetingTitle}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eee;">
@@ -99,14 +106,13 @@ router.post('/schedule', async (req, res) => {
               <p><strong>Date:</strong> ${req.body.meetingDate}</p>
               <p><strong>Time:</strong> ${req.body.startTime} - ${req.body.endTime}</p>
               <p><strong>Location:</strong> ${req.body.locationType === 'online' ? req.body.meetingLink : req.body.physicalLocation}</p>
-              ${req.body.purpose ? `<p><strong>Purpose:</strong> ${req.body.purpose}</p>` : ''}
               <hr/>
               <p>Log in to StokvèlHub to view more details.</p>
             </div>
           `
         }).catch(err => console.log('Email error:', err.message));
       }
-      console.log(`✅ Notifications sent to ${groupMembers.length} members`);
+      console.log(` Notifications sent to ${groupMembers.length} members`);
     }
 
     res.status(201).json(savedMeeting);

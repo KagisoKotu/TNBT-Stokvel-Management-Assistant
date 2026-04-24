@@ -1,12 +1,14 @@
 require('dotenv').config();
 const dns = require('dns');
+// Helps with connection stability on certain networks
 dns.setServers(['8.8.8.8', '8.8.4.4']); 
 
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors'); 
+const admin = require('firebase-admin');
 
-// Route Imports
+// --- 1. Route Imports ---
 const stokvelRoutes = require('./routes/stokvelRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoutes');
@@ -15,23 +17,35 @@ const managegroupRoutes = require('./routes/managegroupRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 
-
 const app = express();
 
-// --- Middleware ---
-app.use(cors());
+// --- 2. Firebase Initialization (Smart Logic) ---
+// We do this early so routes that depend on Firebase (like Auth) don't crash
+let serviceAccount;
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    // Production (Render)
+    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+} else {
+    // Local Testing
+    serviceAccount = require("./serviceAccountKey.json");
+}
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
+// --- 3. Middleware ---
+app.use(cors()); // Allows your GitHub Pages frontend to talk to this Render backend
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Request Logger
+// Request Logger (Very helpful for debugging during your assessment)
 app.use((req, res, next) => {
     console.log(`${req.method} request received at ${req.url}`);
     next();
 });
 
-const PORT = process.env.PORT || 5000;
-
-// --- Database Connection ---
+// --- 4. Database Connection ---
 const connectionOptions = {
     serverSelectionTimeoutMS: 10000, 
     socketTimeoutMS: 45000,          
@@ -39,57 +53,43 @@ const connectionOptions = {
 
 mongoose.connect(process.env.MONGO_URI, connectionOptions)
     .then(() => {
-        console.log('Connected to Stokvel MongoDB');
+        console.log('✅ Connected to Stokvel MongoDB');
+        
+        // Clean up old database indexes if they exist
         const dropOldIndex = async () => {
             try {
                 await mongoose.connection.db.collection('users').dropIndex('googleId_1');
-                console.log('SUCCESS: Old googleId index dropped!');
+                console.log('✨ Cleaned up old database indexes');
             } catch (err) {
-                if (err.message.includes('not found')) {
-                    console.log('Index Status: Old index already gone.');
-                } else {
-                    console.log('Index Note:', err.message);
-                }
+                // If it's already gone, we don't care
             }
         };
         dropOldIndex();
     })
     .catch(err => {
-        console.error('Database Connection Error:', err.message);
+        console.error('❌ Database Connection Error:', err.message);
     });
 
-// --- Routes ---
-app.use('/api/auth', authRoutes);       // ← only registered ONCE
+// --- 5. Routes ---
+// These are the "Doors" to your backend
+app.use('/api/auth', authRoutes);
 app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/managegroup', managegroupRoutes);
-app.use('/api/meetings', meetingRoutes);           // ← only ONCE
-app.use('/api/notifications', notificationRoutes); // ← yours
+app.use('/api/meetings', meetingRoutes);
+app.use('/api/notifications', notificationRoutes);
 
+// Basic Health Check
 app.get('/', (req, res) => {
-    res.send('Stokvel Assistant API is running!');
+    res.send('🚀 Stokvel Assistant API is running and healthy!');
 });
 
+// --- 6. Start Server ---
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server listening at http://localhost:${PORT}`);
+    console.log(`📡 Server listening on Port: ${PORT}`);
 });
 
-const admin = require('firebase-admin');
-
-// Tell the server where to look for the keys
-let serviceAccount;
-
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  // If we are on Render, parse the string from the Environment Variable vault
-  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-} else {
-  // If we are on your local laptop, look for the physical file
-  serviceAccount = require("./serviceAccountKey.json");
-}
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
+// Export admin so other files can use Firebase if needed
 module.exports = admin;

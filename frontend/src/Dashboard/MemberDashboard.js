@@ -63,7 +63,7 @@ const MemberDashboard = ({ user, onLogout }) => {
 
       setLoadingAgendas(true);
       try {
-        const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const apiUrl = 'http://tnbt-stokvel-management-assistant.onrender.com/api';
         
         // Knock on the backend door for this specific group's agendas
         const response = await axios.get(`${apiUrl}/meetings/agenda/${activeGroupId}`);
