@@ -22,17 +22,21 @@ const app = express();
 // --- 2. Firebase Initialization (Smart Logic) ---
 // We do this early so routes that depend on Firebase (like Auth) don't crash
 let serviceAccount;
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    // Production (Render)
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-} else {
-    // Local Testing
-    serviceAccount = require("./serviceAccountKey.json");
-}
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        // 1. Production (Render)
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    } else {
+        // 2. Local Testing (Your Laptop)
+        serviceAccount = require("./serviceAccountKey.json");
+        admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
+    }
+} catch (error) {
+    // 3. GitHub Actions CI/CD Pipeline (No keys available, prevent crash)
+    console.log("⚠️ Skipping Firebase Admin initialization (No credentials found - Safe for CI/Testing)");
+}
 
 // --- 3. Middleware ---
 app.use(cors()); // Allows your GitHub Pages frontend to talk to this Render backend

@@ -1,6 +1,7 @@
 // tests/minutesController.test.js
 const { saveMinutes } = require('../controllers/minutesController');
 const Minutes = require('../models/minutes');
+// const User = require('../models/user'); // <-- Make sure you import User if you keep the block below!
 
 // Mock the Mongoose model
 jest.mock('../models/minutes');
@@ -29,12 +30,13 @@ describe('Minutes Controller - saveMinutes (Existing Schema)', () => {
   });
 
   // 2. Setup Test User
-    beforeEach(() => {
-        await User.create({
-            firebaseUid: "mock-firebase-uid-123",
-            name: "Alice Zwane", 
-            email: "alice@test.com"
-        });
+  beforeEach(async () => {
+      await User.create({
+          firebaseUid: "mock-firebase-uid-123",
+          name: "Alice Zwane", 
+          email: "alice@test.com"
+      });
+  }); // <--- THIS WAS MISSING!
 
   afterEach(() => {
     jest.clearAllMocks();
