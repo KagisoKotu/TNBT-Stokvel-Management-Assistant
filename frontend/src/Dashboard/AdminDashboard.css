@@ -1,4 +1,4 @@
-.dashboard-container {
+/*.dashboard-container {
   background-color: #e3f2fd;
   min-height: 100vh;
   display: flex;
@@ -169,4 +169,4 @@
   transform: translateY(-5px);
   transition: transform 0.2s ease;
   cursor: pointer;
-}
+}*/
