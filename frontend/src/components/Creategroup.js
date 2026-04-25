@@ -146,7 +146,7 @@ const CreateGroup = () => {
 
       try {
         // SMART URL LOGIC: Points to Render when live, or localhost when testing
-        const apiUrl = process.env.REACT_APP_API_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
         // Send the bundled 'payload' to the backend
         const response = await axios.post(`${apiUrl}/stokvel`, payload);

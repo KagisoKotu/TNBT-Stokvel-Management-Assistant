@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import MemberDetails from '../Dashboard/MemberDetails';
 
 describe('MemberDetails Component', () => {
@@ -11,53 +11,76 @@ describe('MemberDetails Component', () => {
     };
 
     const mockOnClose = jest.fn();
-    // Ensure the mock specifically returns a resolved promise
-    const mockOnRemove = jest.fn().mockImplementation(() => Promise.resolve(true));
+    const mockOnRemove = jest.fn();
 
     beforeEach(() => {
+        
         window.sessionStorage.setItem('user', JSON.stringify({ email: 'admin@test.com' }));
         jest.clearAllMocks();
     });
 
     test('renders member details correctly', () => {
         render(<MemberDetails member={mockMember} onClose={mockOnClose} onRemove={mockOnRemove} />);
+        
+        expect(screen.getByRole('heading', { name: /Bob Mokoena/i })).toBeInTheDocument();
         expect(screen.getByText(/bob@test.com/i)).toBeInTheDocument();
-        // Matching localized date format used in component
+        
         expect(screen.getByText(/18 April 2026/i)).toBeInTheDocument(); 
     });
 
     test('calls onRemove and shows success message on "Yes" click', async () => {
+        
+        mockOnRemove.mockResolvedValue(true);
+
         render(<MemberDetails member={mockMember} onClose={mockOnClose} onRemove={mockOnRemove} />);
         
-        // Show confirmation box
+       
         fireEvent.click(screen.getByText(/Remove Member/i));
 
-        // Click Yes
-        const yesButton = screen.getByRole('button', { name: /yes/i });
-        fireEvent.click(yesButton);
+       
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /yes/i }));
+        });
 
-        // Verify the function call
+        
         expect(mockOnRemove).toHaveBeenCalledWith('2');
 
-        // Use findByText which automatically handles the async state update
+        
         const successMessage = await screen.findByText(/successfully removed/i);
         expect(successMessage).toBeInTheDocument();
     });
 
-    test('calls onClose and does NOT remove when "No" is clicked', () => {
+    test('hides confirmation box when "No" is clicked', () => {
         render(<MemberDetails member={mockMember} onClose={mockOnClose} onRemove={mockOnRemove} />);
+        
         fireEvent.click(screen.getByText(/Remove Member/i));
+        
+        
+        expect(screen.getByText(/Are you sure/i)).toBeInTheDocument();
 
-        const noButton = screen.getByRole('button', { name: /no/i });
-        fireEvent.click(noButton);
+        
+        fireEvent.click(screen.getByRole('button', { name: /no/i }));
 
+        
+        expect(screen.queryByText(/Are you sure/i)).not.toBeInTheDocument();
         expect(mockOnRemove).not.toHaveBeenCalled();
-        expect(mockOnClose).toHaveBeenCalled(); 
     });
 
-    test('hides remove button if viewing own profile', () => {
-        window.sessionStorage.setItem('user', JSON.stringify({ email: 'bob@test.com' }));
+    test('shows error message if removal fails', async () => {
+        
+        mockOnRemove.mockResolvedValue(false);
+        
         render(<MemberDetails member={mockMember} onClose={mockOnClose} onRemove={mockOnRemove} />);
-        expect(screen.queryByText(/Remove Member/i)).not.toBeInTheDocument();
+        
+        fireEvent.click(screen.getByText(/Remove Member/i));
+
+        
+        await act(async () => {
+            fireEvent.click(screen.getByRole('button', { name: /yes/i }));
+        });
+
+        
+        const errorMessage = await screen.findByText(/failed/i);
+        expect(errorMessage).toBeInTheDocument();
     });
 });

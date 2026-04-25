@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import { useNavigate, Link, useParams} from 'react-router-dom';
 import './AdminDashboard.css';
 
@@ -16,7 +16,6 @@ const AdminDashboard = ({ user, onLogout }) => {
   };
 
   const goToMeetingManager = () => {
-  // Notice we are using backticks ( ` ) instead of quotes now!
   navigate(`/meeting-manager/${groupId}`);
   };
 
@@ -131,4 +130,4 @@ const AdminDashboard = ({ user, onLogout }) => {
   );
 };
 
-export default AdminDashboard;
+export default AdminDashboard;*/
