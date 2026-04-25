@@ -91,9 +91,10 @@ app.get('/', (req, res) => {
 
 // --- 6. Start Server ---
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`📡 Server listening on Port: ${PORT}`);
-});
-
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`📡 Server listening on Port: ${PORT}`);
+    });
+}
 // Export admin so other files can use Firebase if needed
-module.exports = admin;
+module.exports = { app, admin };
