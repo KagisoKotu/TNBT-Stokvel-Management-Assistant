@@ -377,3 +377,4 @@ export const RecordMinutes = () => {
     </main>
   );
 };
+export default RecordMinutes;

@@ -4,28 +4,34 @@ import './MemberDetails.css';
 const MemberDetails = ({ member, onClose, onRemove }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
-  const currentUser = JSON.parse(sessionStorage.getItem('user'));
+  const [error, setError] = useState(null); 
+
+  const currentUser = JSON.parse(sessionStorage.getItem('user') || '{}');
   
-  // Robust check to see if the profile is the logged-in user
+ 
   const isMe = member.userEmail?.trim().toLowerCase() === currentUser?.email?.trim().toLowerCase();
 
   const handleConfirmYes = async () => {
+    setError(null);
     const success = await onRemove(member._id);
+    
     if (success) {
       setSuccessMsg("You have successfully removed this person as a member");
-      // Wait 2 seconds so the user can read the confirmation
+      
       setTimeout(() => {
         onClose(); 
       }, 2000);
+    } else {
+    
+      setError("Failed to remove member.");
     }
   };
 
   const handleConfirmNo = () => {
-    // Closes the panel and returns to the list view immediately
-    onClose(); 
+    setShowConfirm(false); 
   };
 
-  // Success Screen
+  
   if (successMsg) {
     return (
       <aside className="member-details-panel">
@@ -39,11 +45,14 @@ const MemberDetails = ({ member, onClose, onRemove }) => {
   return (
     <aside className="member-details-panel">
       <header className="details-header">
-        <button className="close-details" onClick={onClose} aria-label="Close">×</button>
+        <button type="button" className="close-details" onClick={onClose} aria-label="Close">×</button>
         <h2>{isMe ? "Your Profile" : member.displayName}</h2>
       </header>
 
       <article className="details-content">
+        {/* Render error if it exists */}
+        {error && <p className="error-text">{error}</p>}
+
         {!showConfirm ? (
           <section className="profile-info">
             <section className="info-group">
@@ -76,7 +85,11 @@ const MemberDetails = ({ member, onClose, onRemove }) => {
 
             {!isMe && (
               <footer className="details-footer">
-                <button className="remove-trigger-btn" onClick={() => setShowConfirm(true)}>
+                <button 
+                  type="button" 
+                  className="remove-trigger-btn" 
+                  onClick={() => setShowConfirm(true)}
+                >
                   Remove Member
                 </button>
               </footer>
@@ -86,8 +99,8 @@ const MemberDetails = ({ member, onClose, onRemove }) => {
           <section className="confirmation-box">
             <p className="warning-text">Are you sure you want to remove this member?</p>
             <nav className="confirm-nav">
-              <button className="confirm-btn no" onClick={handleConfirmNo}>No</button>
-              <button className="confirm-btn yes" onClick={handleConfirmYes}>Yes</button>
+              <button type="button" className="confirm-btn no" onClick={handleConfirmNo}>No</button>
+              <button type="button" className="confirm-btn yes" onClick={handleConfirmYes}>Yes</button>
             </nav>
           </section>
         )}

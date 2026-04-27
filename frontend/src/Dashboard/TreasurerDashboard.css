@@ -57,7 +57,8 @@
   
   background: transparent !important;
   border: none !important;
-  color: #d1d5db !important;
+  color: white !important;
+  /*color: #d1d5db !important;*/
   cursor: pointer !important;
   font-family: inherit !important;
   text-decoration: none !important;
@@ -76,8 +77,8 @@
   outline: none !important;
   cursor: pointer !important;
   margin: 0 !important;
-  
-  color: #d1d5db !important;
+  color: white !important;
+  /*color: #d1d5db !important;*/
   font-family: inherit !important;
   font-size: 0.95rem !important; 
   font-weight: 500 !important;
@@ -390,7 +391,8 @@
   cursor: pointer !important;
   margin: 0 !important;
   
-  color: #d1d5db !important;
+  color: white !important;
+ /* color: #d1d5db !important;*/
   font-family: inherit !important;
   font-size: 0.95rem !important; 
   font-weight: 500 !important;
@@ -455,4 +457,15 @@
 .calendar-day:hover:not(.empty) {
   background-color: #f0f0f0;
   border-radius: 50%;
+}
+
+.dashboard-shell .sidebar .nav-item label,
+.dashboard-shell .sidebar .submenu-btn label,
+.dashboard-shell .sidebar .footer-item label,
+.dashboard-shell .sidebar .nav-item p,
+.dashboard-shell .sidebar .submenu-btn p,
+.dashboard-shell .sidebar .footer-item p {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #ffffff !important; /* Forces color in some Webkit browsers */
 }

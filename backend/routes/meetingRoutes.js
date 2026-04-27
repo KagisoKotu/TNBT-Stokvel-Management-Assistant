@@ -70,10 +70,8 @@ router.post('/schedule', async (req, res) => {
 
     const groupName = group.groupName.trim();
 
-    // 3. Find all members using group name
-    const groupMembers = await Member.find({
-      group: groupName
-    });
+    // 3. Find all members using the group name
+    const groupMembers = await Member.find({ group: groupName });
 
     // 4. Remove duplicate members by email
     const uniqueMembers = [
@@ -90,17 +88,16 @@ router.post('/schedule', async (req, res) => {
     // 5. Create notifications
     if (uniqueMembers.length > 0) {
       for (let member of uniqueMembers) {
+        const emailToNotify = member.user.toLowerCase();
+
         await Notification.create({
-          recipient: member.user.toLowerCase(),
+          recipient: emailToNotify,
           type: 'meeting',
           title: `Meeting Scheduled: ${savedMeeting.meetingTitle}`,
-
-          // Message now uses the meeting description/purpose only
           message: savedMeeting.purpose || 'A new meeting has been scheduled.',
-
           groupId: savedMeeting.groupId,
           meetingId: savedMeeting._id,
-
+          isRead: false,
           details: {
             groupName,
             meetingTitle: savedMeeting.meetingTitle,
@@ -118,7 +115,7 @@ router.post('/schedule', async (req, res) => {
         // Optional email notification
         transporter.sendMail({
           from: process.env.EMAIL_USER,
-          to: member.user,
+          to: emailToNotify,
           subject: `Meeting Scheduled: ${savedMeeting.meetingTitle}`,
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eee;">
@@ -132,7 +129,7 @@ router.post('/schedule', async (req, res) => {
               <p><strong>Location:</strong> ${
                 savedMeeting.locationType === 'online'
                   ? savedMeeting.meetingLink || savedMeeting.platform || 'Online'
-                  : savedMeeting.physicalLocation
+                  : savedMeeting.physicalLocation || 'Not provided'
               }</p>
               ${
                 savedMeeting.purpose

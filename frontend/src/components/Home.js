@@ -1,52 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
-import { House, Search, Wallet, Bell, User, ChevronDown, MoreVertical, Trash2 } from 'lucide-react'; 
+import { House, Search, Wallet, Bell, User, ChevronDown, MoreVertical, Trash2, CheckCircle } from 'lucide-react';
 import NotificationBell from './NotificationBell';
+import ProfileTable from './ProfileTable';
 
 const Home = () => {
   const navigate = useNavigate();
-  
-  // ==========================================
-  // 1. STATE MANAGEMENT
-  // ==========================================
-  const [activeTab, setActiveTab] = useState('home'); // Tracks bottom nav bar
-  const [groups, setGroups] = useState([]); // Holds the user's fetched stokvel groups
-  const [openMenuId, setOpenMenuId] = useState(null); // Tracks which group's "3-dot" menu is open
-  const [loading, setLoading] = useState(true); // Shows a loading state before data arrives
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('home'); 
+  const [groups, setGroups] = useState([]); 
+  const [openMenuId, setOpenMenuId] = useState(null); 
+  const [loading, setLoading] = useState(true);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
 
-  // Grab the currently logged-in user from the session memory
   const loggedInUser = JSON.parse(sessionStorage.getItem('user'));
 
-  // ==========================================
-  // 2. DATA FETCHING (Runs on component load)
-  // ==========================================
-  useEffect(() => {
-    const fetchGroups = async () => {
-      try {
-        if (loggedInUser && loggedInUser.email) {
-          // SMART URL LOGIC: dynamically switches between local testing and Render live server
-          const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
-          
-          // Fetch groups where this specific user is a member
-          const response = await axios.get(`${apiUrl}/stokvel/user/${loggedInUser.email}`);
-          setGroups(response.data);
-        }
-      } catch (err) {
-        console.error("Error fetching groups:", err);
-      } finally {
-        setLoading(false); // Stop the loading spinner regardless of success or failure
+  const fetchGroups = async () => {
+    try {
+      if (loggedInUser && loggedInUser.email) {
+        const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
+        const response = await axios.get(`${apiUrl}/stokvel/user/${loggedInUser.email}`);
+        setGroups(response.data);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching groups:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchGroups();
   }, [loggedInUser?.email]);
 
-  // ==========================================
-  // 3. EVENT HANDLERS
-  // ==========================================
-  
-  // Routes the user to the correct dashboard based on their role in that specific group
+  useEffect(() => {
+    if (location.state?.refresh) {
+      fetchGroups();
+      setNewGroupName(location.state.newGroup || '');
+      setShowSuccessToast(true);
+      setTimeout(() => {
+        setShowSuccessToast(false);
+      }, 5000);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+
   const handleGroupClick = (group) => {
     const role = group.userRole;
     console.log(`Navigating to ${role} dashboard for: ${group.groupName}`);
@@ -67,37 +68,139 @@ const Home = () => {
     }
   };
 
-  // Removes a group from the UI instantly
   const removeGroup = (id) => {
     setGroups(groups.filter(group => group._id !== id));
     setOpenMenuId(null);
   };
 
-  // Opens/Closes the tiny 3-dot dropdown menu on a group card
   const toggleMenu = (e, id) => {
-    e.stopPropagation(); // Prevents clicking the menu from accidentally triggering the handleGroupClick routing
+    e.stopPropagation(); 
     setOpenMenuId(openMenuId === id ? null : id);
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return <ProfileTable />;
+      
+      case 'home':
+      default:
+        return (
+          <>
+            <header className="content-header">
+              <h2>My Stockvel Groups</h2>
+              <button
+                type="button"
+                className="create-group-btn"
+                onClick={() => navigate('/create-group')}
+              >
+                + Create a group
+              </button>
+            </header>
+
+            <section className="groups-display-container">
+              <article className={`status-container ${groups.length > 0 ? 'has-grid' : 'is-empty'}`}>
+                {loading ? (
+                  <p className="empty-msg">Loading your groups...</p>
+                ) : groups.length === 0 ? (
+                  <p className="empty-msg">You are currently not in any group</p>
+                ) : (
+                  <ul className="groups-grid">
+                    {groups.map((group) => (
+                      <li key={group._id}>
+                        <article
+                          className="group-tile"
+                          onClick={() => handleGroupClick(group)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          <header className="tile-banner"></header>
+                          <section className="tile-content">
+                            <h3>{group.groupName}</h3>
+                            <p style={{
+                              color: '#8b5cf6',
+                              fontWeight: 'bold',
+                              textTransform: 'capitalize',
+                              margin: '4px 0'
+                            }}>
+                              {group.userRole}
+                            </p>
+                            <p>{group.frequency} • R{group.contributionAmount}</p>
+                            <footer className="tile-actions">
+                              <button
+                                type="button"
+                                className="tile-menu-btn"
+                                onClick={(e) => toggleMenu(e, group._id)}
+                              >
+                                <MoreVertical size={18} />
+                              </button>
+                              {openMenuId === group._id && (
+                                <ul className="tile-dropdown">
+                                  <li>
+                                    <button type="button" className="remove-opt" onClick={(e) => {
+                                      e.stopPropagation();
+                                      removeGroup(group._id);
+                                    }}>
+                                      <Trash2 size={14} /> Remove
+                                    </button>
+                                  </li>
+                                </ul>
+                              )}
+                            </footer>
+                          </section>
+                        </article>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </article>
+            </section>
+          </>
+        );
+    }
   };
 
   return (
     <section className="layout-root">
+      {showSuccessToast && (
+        <aside className="success-toast" role="alert" aria-live="polite">
+          <figure className="toast-icon">
+            <CheckCircle size={20} color="#10b981" />
+          </figure>
+          <section className="toast-content">
+            <strong>Group Created Successfully</strong>
+            <p>Your group "{newGroupName}" has been created. Invitations have been sent.</p>
+          </section>
+          <button className="toast-close" onClick={() => setShowSuccessToast(false)} aria-label="Close">
+            ×
+          </button>
+        </aside>
+      )}
+
       <header className="top-navbar">
-        <h1 className="brand-logo">Stockvel Stockie</h1>
+        <h1 className="brand-logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" style={{ marginRight: '8px', verticalAlign: 'middle' }}>
+            <circle cx="16" cy="16" r="16" fill="#F5C842" />
+            <path d="M10 20 L16 10 L22 20" stroke="#1A3A6B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="16" cy="22" r="2" fill="#1A3A6B"/>
+          </svg>
+          StockvelStockkie
+        </h1>
         <nav className="top-nav-actions">
-
-          {/* Our custom Notification Bell Component */}
           <NotificationBell userEmail={loggedInUser?.email} />
-
           <details className="profile-dropdown">
             <summary className="profile-summary">
               <User size={24} />
               <ChevronDown size={16} />
             </summary>
             <ul className="dropdown-menu">
-              <li><button type="button">Profile</button></li>
+              <li><button type="button" onClick={handleProfileClick}>Profile</button></li>
               <li><button type="button" onClick={() => {
-                sessionStorage.clear(); // Wipe secure data
-                navigate('/'); // Send to login
+                sessionStorage.clear(); 
+                navigate('/'); 
               }}>Logout</button></li>
             </ul>
           </details>
@@ -105,77 +208,9 @@ const Home = () => {
       </header>
 
       <main className="content-area">
-        <header className="content-header">
-          <h2>My Stockvel Groups</h2>
-          <button 
-            type="button" 
-            className="create-group-btn"
-            onClick={() => navigate('/create-group')}
-          >
-            + Create a group
-          </button>
-        </header>
-
-        <section className="groups-display-container">
-          <article className={`status-container ${groups.length > 0 ? 'has-grid' : 'is-empty'}`}>
-            {/* Conditional Rendering: Show loading, empty state, or actual data */}
-            {loading ? (
-              <p className="empty-msg">Loading your groups...</p>
-            ) : groups.length === 0 ? (
-              <p className="empty-msg">You are currently not in any group</p>
-            ) : (
-              <ul className="groups-grid">
-                {groups.map((group) => (
-                  <li key={group._id}>
-                    <article 
-                      className="group-tile" 
-                      onClick={() => handleGroupClick(group)} 
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <header className="tile-banner"></header>
-                      <section className="tile-content">
-                        <h3>{group.groupName}</h3>
-                        <p style={{ 
-                          color: '#8b5cf6', 
-                          fontWeight: 'bold', 
-                          textTransform: 'capitalize',
-                          margin: '4px 0' 
-                        }}>
-                          {group.userRole}
-                        </p>
-                        <p>{group.frequency} • R{group.contributionAmount}</p>
-                        <footer className="tile-actions">
-                          <button 
-                            type="button" 
-                            className="tile-menu-btn" 
-                            onClick={(e) => toggleMenu(e, group._id)}
-                          >
-                            <MoreVertical size={18} />
-                          </button>
-                          {openMenuId === group._id && (
-                            <ul className="tile-dropdown">
-                              <li>
-                                <button type="button" className="remove-opt" onClick={(e) => {
-                                  e.stopPropagation();
-                                  removeGroup(group._id);
-                                }}>
-                                  <Trash2 size={14} /> Remove
-                                </button>
-                              </li>
-                            </ul>
-                          )}
-                        </footer>
-                      </section>
-                    </article>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </article>
-        </section>
+        {renderContent()}
       </main>
 
-      {/* Bottom Navigation */}
       <footer className="nav-container">
         <nav aria-label="Main Menu">
           <ul className="nav-list">
