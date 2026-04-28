@@ -1,4 +1,5 @@
 // tests/minutesController.test.js
+require('dotenv').config({ path: '.env.test' });
 const { saveMinutes } = require('../controllers/minutesController');
 const Minutes = require('../models/minutes');
 const User = require('../models/user'); // <-- Make sure you import User if you keep the block below!

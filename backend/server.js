@@ -57,6 +57,9 @@ const connectionOptions = {
 
 const connectDB = async (dbUri = process.env.MONGO_URI) => {
     try {
+        if (mongoose.connection.readyState !== 0) {
+            await mongoose.disconnect();
+        }
         await mongoose.connect(dbUri, {
             serverSelectionTimeoutMS: 10000,
             socketTimeoutMS: 45000,
@@ -94,6 +97,10 @@ app.get('/', (req, res) => {
 
 // --- 6. Start Server ---
 if (require.main === module) {
+    if (process.env.NODE_ENV === 'production' && process.env.MONGO_URI.includes('stokvel_test_db')) {
+        console.error(" CRITICAL ERROR: Production server is trying to connect to a TEST database! Shutting down.");
+        process.exit(1);
+    }
     connectDB(); // Connect to production DB
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {

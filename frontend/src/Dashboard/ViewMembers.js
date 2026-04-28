@@ -44,7 +44,7 @@ const ViewMembers = ({ group, members = [], onSelectMember }) => {
                 >
                   <section className="name-tag-row">
                     <p className="member-display-name">
-                      {isMe ? "You" : member.displayName || member.userEmail}
+                      {isMe ? "You" : member.fullName || member.userEmail}
                     </p>
                     
                     {hasTag && (
