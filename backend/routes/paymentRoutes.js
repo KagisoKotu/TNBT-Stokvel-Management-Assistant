@@ -45,7 +45,7 @@ router.post('/save-success', async (req, res) => {
             amount,
             groupName,
             payerName,
-            userEmail,
+            userEmail: userEmail.toLowerCase(),
             userId,
             zipCode,
             status: 'Confirmed',
@@ -63,6 +63,53 @@ router.post('/save-success', async (req, res) => {
         console.log('-------------------------------------------');
 
         res.status(200).json({ message: 'Payment recorded successfully', data: newPayment });
+    } catch (error) {
+        console.error('DATABASE ERROR:', error.message);
+        res.status(500).json({ message: 'Failed to record payment', error: error.message });
+    }
+});
+
+router.post('/record-payment', async (req, res) => {
+    const { 
+        amount, 
+        groupName, 
+        payerName, 
+        userEmail, 
+        userId, 
+        paymentMethod, 
+        status,
+        date 
+    } = req.body;
+
+    try {
+        const transactionId = `MANUAL_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+        
+        const newPayment = await Payment.create({
+            transactionId,
+            amount,
+            groupName,
+            payerName,
+            userEmail: userEmail.toLowerCase(),
+            userId,
+            paymentMethod: paymentMethod || 'manual',
+            status: status || 'Pending',
+            date: date || new Date()
+        });
+
+        console.log('-------------------------------------------');
+        console.log('MANUAL PAYMENT RECORDED');
+        console.log(`Payer: ${payerName}`);
+        console.log(`Email: ${userEmail}`);
+        console.log(`Amount: R${amount}`);
+        console.log(`Group: ${groupName}`);
+        console.log(`Method: ${paymentMethod}`);
+        console.log(`Status: ${status || 'Pending'}`);
+        console.log('-------------------------------------------');
+
+        res.status(200).json({ 
+            message: 'Payment recorded successfully', 
+            data: newPayment 
+        });
     } catch (error) {
         console.error('DATABASE ERROR:', error.message);
         res.status(500).json({ message: 'Failed to record payment', error: error.message });
