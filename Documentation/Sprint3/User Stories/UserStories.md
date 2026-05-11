@@ -1,6 +1,6 @@
 # Stokvel Management System - User Stories
 
-## User Story #1: Invite New Members (Admin)
+## User Story #1: Invite New Members (Admin) - Thabiso
 
 **As an** Admin of a stokvel group,  
 **I want to** invite new members to join the group,  
@@ -12,7 +12,7 @@
 
 ---
 
-## User Story #2: Online Contributions via Payment Gateway (Member)
+## User Story #2: Online Contributions via Payment Gateway (Member) - Nkateko
 
 **As a** Member of a stokvel group,  
 **I want to** make contributions online via a third-party payment gateway,  
@@ -24,7 +24,7 @@
 
 ---
 
-## User Story #3: Save Bank Account Details (User)
+## User Story #3: Save Bank Account Details (User) - Sikhona
 
 **As a** User of the stokvel system,  
 **I want to** securely save my bank account details in my profile,  
@@ -36,7 +36,7 @@
 
 ---
 
-## User Story #4: Manage Payout Schedule (Treasurer)
+## User Story #4: Manage Payout Schedule (Treasurer) - Gomolemo
 
 **As a** Treasurer of a stokvel group,  
 **I want to** manage the payout schedule,  
@@ -48,7 +48,7 @@
 
 ---
 
-## User Story #5: View Prime Lending Rate & Projected Savings (Member)
+## User Story #5: View Prime Lending Rate & Projected Savings (Member) - Liso
 
 **As a** Member of a stokvel group,  
 **I want to** view the current South African prime lending rate and see my projected savings growth,  
@@ -60,7 +60,7 @@
 
 ---
 
-## User Story #6: View Contribution History (Member)
+## User Story #6: View Contribution History (Member) - Kagiso
 
 **As a** Member of a stokvel group,  
 **I want to** view my complete contribution history,  
