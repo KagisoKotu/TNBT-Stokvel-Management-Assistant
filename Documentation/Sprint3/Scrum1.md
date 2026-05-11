@@ -57,9 +57,3 @@ It was noted that the sprint duration had been extended from 2 weeks to 3 weeks,
 ## Evidence
 
 ![evidence](s31.jpg)
-
-
-
-Name: ___________________________  
-Role: ___________________________  
-Date: ___________________________
