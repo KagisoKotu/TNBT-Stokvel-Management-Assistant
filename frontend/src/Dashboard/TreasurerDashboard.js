@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import './TreasurerDashboard.css';
 import Profile from '../components/Profile';
 import PaymentHistory from '../components/PaymentHistory';
+import SchedulePayout from '../components/SchedulePayout';
 
 const TreasurerDashboard = ({ onLogout = () => {} }) => {
   const navigate = useNavigate();
@@ -477,8 +478,7 @@ const TreasurerDashboard = ({ onLogout = () => {} }) => {
 
           {activeTab === 'payout-schedule' && (
             <section className="group-summary">
-              <h3>Payout Schedule</h3>
-              <p>View and manage payout schedules feature coming soon.</p>
+              <SchedulePayout /> 
             </section>
           )}
         </section>

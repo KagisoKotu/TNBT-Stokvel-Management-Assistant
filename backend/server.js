@@ -21,6 +21,23 @@ const minutesRoutes = require('./routes/recordMinutesRoutes');
 
 const app = express();
 
+// --- 3. Middleware ---
+// Explicit CORS to allow your React app to talk to this API
+app.use(cors({
+    origin: 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Added PUT so you can update payout statuses later
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-user-role'] // Added your VIP pass header
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Request Logger
+app.use((req, res, next) => {
+    console.log(`${req.method} request received at ${req.url}`);
+    next();
+});
+
 // --- 2. Firebase Initialization ---
 let serviceAccount;
 try {
@@ -36,27 +53,9 @@ try {
     console.log("⚠️ Skipping Firebase Admin initialization (No credentials found)");
 }
 
-// --- 3. Middleware ---
-// Explicit CORS to allow your React app to talk to this API
-app.use(cors({
-    origin: 'http://localhost:3000',
-    methods: ['GET', 'POST'],
-    allowedHeaders: ['Content-Type']
-}));
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-// Request Logger
-app.use((req, res, next) => {
-    console.log(`${req.method} request received at ${req.url}`);
-    next();
-});
-
 // --- 4. Register Routes ---
 // The Stripe route must match your frontend fetch URL
 app.use('/api/payments', paymentRoutes); 
-
 app.use('/api/auth', authRoutes);
 app.use('/api/stokvel', stokvelRoutes);
 app.use('/api/admin', adminRoutes);
