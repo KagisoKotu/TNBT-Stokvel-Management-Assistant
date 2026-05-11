@@ -10,7 +10,7 @@ import Profile from '../components/Profile';
 import PaymentPreview from './PaymentPreview'; 
 import PaymentGateway from './PaymentGateway'; 
 import PaymentSuccess from './PaymentSuccess';
-import MemberContributionHistory from '../components/MemberContributionHistory';
+import PaymentHistory from '../components/PaymentHistory';
 
 const MemberDashboard = ({ onLogout = () => {} }) => {
   const navigate = useNavigate();
@@ -221,7 +221,11 @@ const MemberDashboard = ({ onLogout = () => {} }) => {
           )}
 
           {activeTab === 'contributions' && (
-            <MemberContributionHistory user={sessionUser} />
+            <PaymentHistory 
+              user={sessionUser} 
+              groupName={groupName} 
+              groupId={location.state?.groupId} 
+            />
           )}
 
           {activeTab === 'payment' && (
