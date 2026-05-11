@@ -2,7 +2,7 @@ const admin = require('firebase-admin');
 
 // Initialize Firebase Admin (you'll get this JSON from Firebase Console)
 admin.initializeApp({
-  credential: admin.credential.cert(require('./backend/serviceAccountKey.json'))
+  credential: admin.credential.cert(require('../serviceAccountKey.json'))
 });
 
 const verifyFirebaseToken = async (req, res, next) => {
@@ -19,3 +19,4 @@ const verifyFirebaseToken = async (req, res, next) => {
     res.status(401).send("Invalid Token");
   }
 };
+module.exports = { verifyFirebaseToken };

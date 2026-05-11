@@ -17,6 +17,7 @@ const managegroupRoutes = require('./routes/managegroupRoutes');
 const meetingRoutes = require('./routes/meetingRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const minutesRoutes = require('./routes/recordMinutesRoutes');
+const bankingRoutes = require('./routes/bankingRoutes');
 
 const app = express();
 
@@ -35,6 +36,7 @@ try {
         admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
     }
 } catch (error) {
+    console.error("DEBUG: Firebase failed because:", error.message);
     // 3. GitHub Actions CI/CD Pipeline (No keys available, prevent crash)
     console.log("⚠️ Skipping Firebase Admin initialization (No credentials found - Safe for CI/Testing)");
 }
@@ -91,6 +93,7 @@ app.use('/api/managegroup', managegroupRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/minutes', minutesRoutes); // Added route for meeting minutes
+app.use('/api/banking', bankingRoutes);
 
 // Basic Health Check
 app.get('/', (req, res) => {

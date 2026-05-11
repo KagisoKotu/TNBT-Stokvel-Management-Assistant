@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './Home.css';
-import { House, Search, Wallet, Bell, User, ChevronDown, MoreVertical, Trash2, CheckCircle } from 'lucide-react';
+import { House, Search, CreditCard, Bell, User, ChevronDown, MoreVertical, Trash2, CheckCircle } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 import ProfileTable from './ProfileTable';
+import BankingOptions from './BankingOptions';
+import BankingDetails from './BankingDetails';
+import ViewBankingDetails from './ViewBankingDetails';
+import { useBanking } from './useBanking';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -82,10 +86,37 @@ const Home = () => {
     navigate('/profile');
   };
 
+  const { 
+    bankingView, 
+    hasBankingDetails, 
+    bankData, 
+    showEmptyWarning, 
+    handleViewDetails, 
+    navigateToForm, 
+    navigateToMenu 
+  } = useBanking(loggedInUser?.email);
+
   const renderContent = () => {
     switch (activeTab) {
       case 'profile':
         return <ProfileTable />;
+
+      case 'account': 
+        if (bankingView === 'form') {
+          return <BankingDetails onBack={navigateToMenu} />;
+        }
+        if (bankingView === 'view') {
+          return (<ViewBankingDetails bankData={bankData} onEdit={navigateToForm} onBack={navigateToMenu} /> );
+        }
+        return (
+          <BankingOptions 
+            hasBankingDetails={hasBankingDetails} // You can link this to a state/API later
+            onViewDetails={handleViewDetails}
+            onAddEditDetails={navigateToForm}
+            onBack={() => setActiveTab('home')}
+            showWarning={showEmptyWarning}
+          />
+        );
       
       case 'home':
       default:
@@ -216,7 +247,7 @@ const Home = () => {
           <ul className="nav-list">
             <li><button onClick={() => setActiveTab('home')} className={activeTab === 'home' ? 'active' : ''}><House size={24} /><small>Home</small></button></li>
             <li><button onClick={() => setActiveTab('search')} className={activeTab === 'search' ? 'active' : ''}><Search size={24} /><small>Search</small></button></li>
-            <li><button onClick={() => setActiveTab('wallet')} className={activeTab === 'wallet' ? 'active' : ''}><Wallet size={24} /><small>Wallet</small></button></li>
+            <li><button onClick={() => setActiveTab('account')} className={activeTab === 'account' ? 'active' : ''}><CreditCard size={24} /><small>My Account Details</small></button></li>
             <li><button onClick={() => setActiveTab('activity')} className={activeTab === 'activity' ? 'active' : ''}><Bell size={24} /><small>Activity</small></button></li>
             <li><button onClick={() => setActiveTab('profile')} className={activeTab === 'profile' ? 'active' : ''}><User size={24} /><small>Profile</small></button></li>
           </ul>

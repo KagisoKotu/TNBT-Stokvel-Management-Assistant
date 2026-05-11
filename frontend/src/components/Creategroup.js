@@ -172,8 +172,10 @@ const CreateGroup = () => {
       if (response.status === 201 || response.status === 200) {
         setCreatedGroupName(formData.groupName);
         setCreatedGroupId(response.data.groupId || '');
+        setIsSubmitting(false);
         setShowSuccessPopup(true);
       } else {
+        setIsSubmitting(false);
         alert("Group created but there was an issue. Please check your dashboard.");
         navigate('/home', { state: { refresh: true } });
       }
@@ -190,9 +192,7 @@ const CreateGroup = () => {
       }
       
       alert(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
+    } 
   };
 
   const handleClosePopup = () => {
