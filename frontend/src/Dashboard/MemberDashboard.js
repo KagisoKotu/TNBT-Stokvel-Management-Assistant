@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, CreditCard, 
   CalendarDays, Mic2, ChevronDown, UserCircle, 
-  LogOut, Bell, FileText
+  LogOut, Bell, FileText, Home // Added Home icon import
 } from 'lucide-react'; 
 import React, { useState } from 'react';
 import './MemberDashboard.css';
@@ -94,6 +94,16 @@ const MemberDashboard = ({ onLogout = () => {} }) => {
                 className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
               >
                 <LayoutDashboard size={20} /> <small>Dashboard</small>
+              </button>
+            </li>
+            {/* Added Home Tab Redirecting to /home */}
+            <li>
+              <button 
+                type="button"
+                onClick={() => navigate('/home')} 
+                className="nav-item"
+              >
+                <Home size={20} /> <small>Home</small>
               </button>
             </li>
             <li>
