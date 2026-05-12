@@ -36,9 +36,10 @@ const CheckoutForm = (props) => {
     try {
       // 1. Create the Payment Intent
       // Use your Render URL for consistency with Home.js
-      const apiUrl = 'http://localhost:5000/api/payments';
+      // Grab the base URL from the environment, or fall back to localhost
+      const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
       
-      const response = await fetch(`${apiUrl}/create-payment-intent`, {
+      const response = await fetch(`${API_BASE_URL}/payments/create-payment-intent`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount }),
@@ -64,7 +65,7 @@ const CheckoutForm = (props) => {
         
         // 3. Save to database with FULL identification
         try {
-          await fetch(`${apiUrl}/save-success`, {
+          await fetch(`${API_BASE_URL}/payments/save-success`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
