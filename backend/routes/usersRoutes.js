@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require('../models/User');
 const Member = require('../models/Member');
 
+const { hardDeleteUserAccount } = require('../controllers/usersController'); 
+
 // Placeholder for Developer 2's security middleware
 // const { verifyToken } = require('../middleware/authMiddleware');
 
@@ -35,6 +37,8 @@ router.put('/assign-role', /* verifyToken, */ (req, res) => {
   res.status(200).json({ message: `Role successfully updated to ${role}. Database save pending.` });
 });
 
+// A hidden route just for devs to clean up test accounts
+router.delete('/dev/wipe-user', hardDeleteUserAccount);
 // ========== NEW ENDPOINT FOR PROFILE TABLE ==========
 
 // Route: GET /api/users/all
@@ -50,6 +54,7 @@ router.get('/all', /* verifyToken, */ async (req, res) => {
       users.map(async (user) => {
         const member = await Member.findOne({ user: user.email });
         return {
+          _id: user._id,
           name: user.name,
           email: user.email,
           role: member?.memberType || 'Member',

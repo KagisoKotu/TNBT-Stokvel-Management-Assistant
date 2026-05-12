@@ -7,6 +7,8 @@ import './App.css';
 import { LoginPage } from './components/Login';
 import { SignUp } from './components/SignUp';
 import Profile from './components/Profile';
+import MyGroups from './components/MyGroups';
+import SchedulePayout from './components/SchedulePayout';
 
 import AdminDashboard from './Dashboard/newAdminDashboard';
 import TreasurerDashboard from './Dashboard/TreasurerDashboard';
@@ -23,6 +25,8 @@ import NotificationDetails from './components/NotificationDetails';
 function App() {
   const handleLogout = () => {
     sessionStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('email');
     window.location.href = '/';
   };
 
@@ -37,6 +41,9 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/create-group" element={<CreateGroup />} />
 
+          <Route path="/my-groups" element={<MyGroups user={user} onLogout={handleLogout} />} />
+          <Route path="/schedule-payout/:groupId" element={<SchedulePayout user={user} onLogout={handleLogout} />} />
+
           <Route path="/meeting-manager/:groupId" element={<MeetingManagerDashboard />} />
           <Route path="/schedule/:groupId" element={<ScheduleMeeting />} />
           <Route path="/manage-group/:groupId" element={<GroupManagement />} />
@@ -45,10 +52,7 @@ function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/notifications/:id" element={<NotificationDetails />} />
 
-          <Route
-            path="/profile"
-            element={<Profile user={user} onLogout={handleLogout} />}
-          />
+          <Route path="/profile" element={<Profile user={user} onLogout={handleLogout} />} />
 
           <Route
             path="/admin-dashboard/:groupId"

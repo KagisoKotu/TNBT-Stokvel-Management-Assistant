@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -12,6 +12,19 @@ import './Login.css';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [showModal, setShowModal] = useState(location.state?.justSignedUp ?? false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.justSignedUp) {
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   useEffect(() => {
     localStorage.removeItem('token');
@@ -23,22 +36,19 @@ export const LoginPage = () => {
     });
   }, []);
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    if (!showModal) return;
+    const timer = setTimeout(() => setShowModal(false), 8000);
+    return () => clearTimeout(timer);
+  }, [showModal]);
 
   const syncWithBackend = async (firebaseToken, firebaseEmail, firstName = '', lastName = '') => {
-    const apiUrl = 'https://tnbt-stokvel-management-assistant.onrender.com/api';
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
     const response = await fetch(`${apiUrl}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        token: firebaseToken,
-        name: firstName,
-        surname: lastName
-      })
+      body: JSON.stringify({ token: firebaseToken, name: firstName, surname: lastName })
     });
 
     const data = await response.json();
@@ -51,14 +61,7 @@ export const LoginPage = () => {
 
     localStorage.setItem('token', firebaseToken);
     localStorage.setItem('email', cleanEmail);
-
-    sessionStorage.setItem(
-      'user',
-      JSON.stringify({
-        ...data.user,
-        email: cleanEmail
-      })
-    );
+    sessionStorage.setItem('user', JSON.stringify({ ...data.user, email: cleanEmail }));
 
     navigate('/home');
   };
@@ -94,7 +97,6 @@ export const LoginPage = () => {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
       const token = await userCredential.user.getIdToken();
       const firebaseEmail = userCredential.user.email;
 
@@ -184,7 +186,7 @@ export const LoginPage = () => {
               }}
             >
               <img
-                src="https://developers.google.com/identity/images/g-logo.png"
+                src="/images/icons8-google-48.png"
                 alt="Google logo"
                 style={{ width: '20px', verticalAlign: 'middle', marginRight: '10px' }}
               />
@@ -212,6 +214,37 @@ export const LoginPage = () => {
           Trusted by 200+ stokvel groups across South Africa
         </footer>
       </article>
+
+      {showModal && (
+        <aside className="signup-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+          <article className="signup-modal-card">
+            <header className="signup-modal-header">
+              <span className="signup-modal-icon" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                  <circle cx="14" cy="14" r="14" fill="#EDFAF3" />
+                  <path d="M8 14l4 4 8-8" stroke="#1A7A4A" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+              <button className="signup-modal-close" onClick={() => setShowModal(false)} aria-label="Close">
+                ×
+              </button>
+            </header>
+
+            <section className="signup-modal-body">
+              <h2 className="signup-modal-title" id="modal-title">You&apos;re in, welcome!</h2>
+              <p className="signup-modal-msg">
+                Your StokvelStokkie account is ready. Sign in to start managing your stokvel.
+              </p>
+            </section>
+
+            <footer className="signup-modal-footer">
+              <button className="signup-modal-continue" onClick={() => setShowModal(false)}>
+                Continue to sign in
+              </button>
+            </footer>
+          </article>
+        </aside>
+      )}
 
       <aside className="login-aside" aria-label="About StokvelStokkie">
         <section className="login-aside-content">

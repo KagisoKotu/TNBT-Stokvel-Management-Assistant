@@ -1,15 +1,17 @@
 {
-  "homepage": "https://kagisokotu.github.io/TNBT-Stokvel-Management-Assistant",
+  "homepage": "https://gomolemorampa.github.io/TNBT-Stokvel-Management-Assistant",
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
+    "@stripe/react-stripe-js": "^6.3.0",
+    "@stripe/stripe-js": "^9.4.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.15.1",
+    "axios": "^1.16.0",
     "firebase": "^12.12.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^1.14.0",
@@ -20,6 +22,7 @@
     "react-router": "6.28.0",
     "react-router-dom": "^6.28.0",
     "react-scripts": "^5.0.1",
+    "sweetalert2": "^11.26.24",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

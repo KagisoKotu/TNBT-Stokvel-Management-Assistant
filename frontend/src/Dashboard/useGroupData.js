@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 
 export const useGroupData = (groupId) => {
+  const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000' 
+  : 'https://tnbt-stokvel-management-assistant.onrender.com';
   const [members, setMembers] = useState([]);
   const [group, setGroup] = useState(null);
 
@@ -8,9 +11,9 @@ export const useGroupData = (groupId) => {
     if (!groupId) return;
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`https://tnbt-stokvel-management-assistant.onrender.com/api/managegroup/${groupId}/members`, {
+      const response = await fetch(`${API_URL}/api/managegroup/${groupId}/members`, {
         headers: { 'Authorization': `Bearer ${token}` }
-        });
+      });
       if (response.ok) {
         const data = await response.json();
         setMembers(data.members || []);

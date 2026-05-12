@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
+const { google } = require('googleapis');
 
-// --- Models ---
 const Agenda = require('../models/Agenda');
 const Meeting = require('../models/Meeting');
 const Notification = require('../models/Notification');
 const Member = require('../models/Member');
 const Group = require('../models/Group');
 
-// --- Email Setup ---
 const nodemailer = require('nodemailer');
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -18,9 +18,10 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+// ===============================
+// AGENDA ROUTES
+// ===============================
 
-
-// POST /meetings/agenda - Save a new agenda
 router.post('/agenda', async (req, res) => {
   try {
     const newAgenda = new Agenda(req.body);
@@ -36,10 +37,7 @@ router.post('/agenda', async (req, res) => {
     }
 
     const groupName = group.groupName.trim();
-
-    const groupMembers = await Member.find({
-      group: groupName
-    });
+    const groupMembers = await Member.find({ group: groupName });
 
     const uniqueMembers = [
       ...new Map(
@@ -81,14 +79,12 @@ router.post('/agenda', async (req, res) => {
       data: savedAgenda,
       notificationsSent: uniqueMembers.length
     });
-
   } catch (err) {
     console.error('Agenda post error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET /meetings/agenda/:groupId - Fetch agendas for a specific group
 router.get('/agenda/:groupId', async (req, res) => {
   try {
     const { groupId } = req.params;
@@ -100,16 +96,65 @@ router.get('/agenda/:groupId', async (req, res) => {
   }
 });
 
+// ===============================
+// SCHEDULING & MEETING ROUTES
+// ===============================
 
-
-// POST /meetings/schedule — save meeting and notify all group members
 router.post('/schedule', async (req, res) => {
   try {
-    // 1. Save the meeting
-    const newMeeting = new Meeting(req.body);
+    let finalMeetingLink = req.body.meetingLink;
+
+    if (req.body.locationType === 'online' && req.body.platform === 'google-meet') {
+      try {
+        const oauth2Client = new google.auth.OAuth2();
+
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (token) {
+          oauth2Client.setCredentials({ access_token: token });
+          const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+
+          const event = {
+            summary: req.body.meetingTitle,
+            description: req.body.purpose,
+            start: {
+              dateTime: `${req.body.meetingDate}T${req.body.startTime}:00Z`,
+              timeZone: 'Africa/Johannesburg'
+            },
+            end: {
+              dateTime: `${req.body.meetingDate}T${req.body.endTime}:00Z`,
+              timeZone: 'Africa/Johannesburg'
+            },
+            conferenceData: {
+              createRequest: {
+                requestId: `stokvel-${Date.now()}`,
+                conferenceSolutionKey: { type: 'hangoutsMeet' }
+              }
+            }
+          };
+
+          const googleResponse = await calendar.events.insert({
+            calendarId: 'primary',
+            resource: event,
+            conferenceDataVersion: 1
+          });
+
+          finalMeetingLink = googleResponse.data.hangoutLink;
+        }
+      } catch (googleErr) {
+        console.error('Google API Error:', googleErr.message);
+      }
+    }
+
+    const newMeeting = new Meeting({
+      ...req.body,
+      meetingLink: finalMeetingLink,
+      groupId: req.body.groupId
+    });
+
     const savedMeeting = await newMeeting.save();
 
-    // 2. Find the group using the groupId from the meeting
     const group = await Group.findById(req.body.groupId);
 
     if (!group) {
@@ -117,11 +162,8 @@ router.post('/schedule', async (req, res) => {
     }
 
     const groupName = group.groupName.trim();
-
-    // 3. Find all members using the group name
     const groupMembers = await Member.find({ group: groupName });
 
-    // 4. Remove duplicate members by email
     const uniqueMembers = [
       ...new Map(
         groupMembers.map(member => [member.user.toLowerCase(), member])
@@ -133,7 +175,6 @@ router.post('/schedule', async (req, res) => {
     console.log('Members found:', groupMembers.length);
     console.log('Unique members found:', uniqueMembers.length);
 
-    // 5. Create notifications
     if (uniqueMembers.length > 0) {
       for (let member of uniqueMembers) {
         const emailToNotify = member.user.toLowerCase();
@@ -160,33 +201,38 @@ router.post('/schedule', async (req, res) => {
           }
         });
 
-        // Optional email notification
         transporter.sendMail({
           from: process.env.EMAIL_USER,
           to: emailToNotify,
           subject: `Meeting Scheduled: ${savedMeeting.meetingTitle}`,
           html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eee;">
-              <h2 style="color: #1A3A6B;">Meeting Notification</h2>
-              <p>A new meeting has been scheduled for your stokvel group.</p>
+            <article style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eee;">
+              <header>
+                <h2 style="color: #1A3A6B;">Meeting Notification</h2>
+                <p>A new meeting has been scheduled for your stokvel group.</p>
+              </header>
               <hr/>
-              <p><strong>Group:</strong> ${groupName}</p>
-              <p><strong>Title:</strong> ${savedMeeting.meetingTitle}</p>
-              <p><strong>Date:</strong> ${savedMeeting.meetingDate}</p>
-              <p><strong>Time:</strong> ${savedMeeting.startTime} - ${savedMeeting.endTime}</p>
-              <p><strong>Location:</strong> ${
-                savedMeeting.locationType === 'online'
-                  ? savedMeeting.meetingLink || savedMeeting.platform || 'Online'
-                  : savedMeeting.physicalLocation || 'Not provided'
-              }</p>
-              ${
-                savedMeeting.purpose
-                  ? `<p><strong>Description:</strong> ${savedMeeting.purpose}</p>`
-                  : ''
-              }
+              <section>
+                <p><strong>Group:</strong> ${groupName}</p>
+                <p><strong>Title:</strong> ${savedMeeting.meetingTitle}</p>
+                <p><strong>Date:</strong> ${savedMeeting.meetingDate}</p>
+                <p><strong>Time:</strong> ${savedMeeting.startTime} - ${savedMeeting.endTime}</p>
+                <p><strong>Location:</strong> ${
+                  savedMeeting.locationType === 'online'
+                    ? savedMeeting.meetingLink || savedMeeting.platform || 'Online'
+                    : savedMeeting.physicalLocation || 'Not provided'
+                }</p>
+                ${
+                  savedMeeting.purpose
+                    ? `<p><strong>Description:</strong> ${savedMeeting.purpose}</p>`
+                    : ''
+                }
+              </section>
               <hr/>
-              <p>Log in to StokvèlHub to view more details.</p>
-            </div>
+              <footer>
+                <p>Log in to StokvelStokkie to view more details.</p>
+              </footer>
+            </article>
           `
         }).catch(err => console.log('Email error:', err.message));
       }
@@ -207,7 +253,6 @@ router.post('/schedule', async (req, res) => {
   }
 });
 
-// GET /meetings — fetch all meetings
 router.get('/', async (req, res) => {
   try {
     const meetings = await Meeting.find().sort({ meetingDate: 1 });
@@ -217,7 +262,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /meetings/group/:groupId — fetch meetings for a specific group
 router.get('/group/:groupId', async (req, res) => {
   try {
     const meetings = await Meeting.find({ groupId: req.params.groupId })

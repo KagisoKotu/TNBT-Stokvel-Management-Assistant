@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './ScheduleMeeting.css';
 
-const ScheduleMeeting = () => {
-  const { groupId } = useParams();
+const ScheduleMeeting = ({ onBackToDashboard }) => {
+  const { groupId: urlGroupId } = useParams();
+  const navigate = useNavigate();
+  const formRef = useRef(null);
+
   const [platform, setPlatform] = useState('google-meet');
   const [locationType, setLocationType] = useState('online');
-  const navigate = useNavigate();
+  const [modal, setModal] = useState({
+    show: false,
+    message: '',
+    isError: false
+  });
 
   const [formData, setFormData] = useState({
     meetingTitle: '',
@@ -20,6 +27,9 @@ const ScheduleMeeting = () => {
     physicalLocation: ''
   });
 
+  const currentGroupId = urlGroupId || 'General';
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
@@ -27,34 +37,98 @@ const ScheduleMeeting = () => {
 
   const handleGoBack = (e) => {
     e.preventDefault();
-    navigate(-1);
+
+    if (onBackToDashboard) {
+      onBackToDashboard();
+    } else {
+      navigate(-1);
+    }
   };
 
-  // --- VALIDATION LOGIC ---
+  const closeModal = () => {
+    const wasSuccessful = !modal.isError && modal.message.includes('Meeting Scheduled Successfully!');
+    setModal({ ...modal, show: false });
+
+    if (wasSuccessful) {
+      formRef.current?.reset();
+
+      setFormData({
+        meetingTitle: '',
+        purpose: '',
+        meetingDate: '',
+        startTime: '',
+        endTime: '',
+        otherPlatform: '',
+        meetingLink: '',
+        physicalLocation: ''
+      });
+
+      setPlatform('google-meet');
+      setLocationType('online');
+
+      if (onBackToDashboard) {
+        onBackToDashboard();
+      } else {
+        navigate(-1);
+      }
+    }
+  };
+
   const validateForm = () => {
-    const { meetingTitle, meetingDate, startTime, endTime, otherPlatform, physicalLocation } = formData;
+    const {
+      meetingTitle,
+      meetingDate,
+      startTime,
+      endTime,
+      otherPlatform,
+      physicalLocation,
+      meetingLink
+    } = formData;
 
-    // 1. Basic Check for empty required strings
     if (!meetingTitle.trim() || !meetingDate || !startTime || !endTime) {
-      alert("Please fill in all required fields marked with *");
+      setModal({
+        show: true,
+        message: 'Please fill in all required fields marked with *',
+        isError: true
+      });
       return false;
     }
 
-    // 2. Time Validation: End Time must be after Start Time
     if (startTime >= endTime) {
-      alert("The Meeting End Time must be later than the Start Time.");
+      setModal({
+        show: true,
+        message: 'The Meeting End Time must be later than the Start Time.',
+        isError: true
+      });
       return false;
     }
 
-    // 3. Conditional Required: Other Platform Name
-    if (locationType === 'online' && platform === 'others' && !otherPlatform.trim()) {
-      alert("Please specify the platform name.");
-      return false;
+    if (locationType === 'online') {
+      if (platform !== 'others' && !meetingLink.trim()) {
+        setModal({
+          show: true,
+          message: 'Please provide the meeting link.',
+          isError: true
+        });
+        return false;
+      }
+
+      if (platform === 'others' && !otherPlatform.trim()) {
+        setModal({
+          show: true,
+          message: 'Please specify the platform name.',
+          isError: true
+        });
+        return false;
+      }
     }
 
-    // 4. Conditional Required: Physical Address
     if (locationType === 'in-person' && !physicalLocation.trim()) {
-      alert("Please provide the physical meeting address.");
+      setModal({
+        show: true,
+        message: 'Please provide the physical meeting address.',
+        isError: true
+      });
       return false;
     }
 
@@ -64,12 +138,11 @@ const ScheduleMeeting = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Trigger our custom validation before calling the API
     if (!validateForm()) return;
 
     const meetingData = {
       ...formData,
-      groupId: groupId,
+      groupId: currentGroupId,
       locationType,
       platform,
       meetingLink: locationType === 'online' ? formData.meetingLink : '',
@@ -77,90 +150,162 @@ const ScheduleMeeting = () => {
     };
 
     try {
-      console.log('Meeting data being sent:', meetingData);
-      await axios.post('http://localhost:5000/api/meetings/schedule', meetingData);
-      alert("Meeting Scheduled Successfully!");
-      navigate(-1);
+      await axios.post(`${apiUrl}/meetings/schedule`, meetingData);
+
+      const existingMeetings = JSON.parse(localStorage.getItem('stokvel_meetings') || '[]');
+      existingMeetings.push(meetingData);
+      localStorage.setItem('stokvel_meetings', JSON.stringify(existingMeetings));
+
+      setModal({
+        show: true,
+        message: `Meeting Scheduled Successfully! \n Title: ${formData.meetingTitle} \n Time: ${formData.startTime}`,
+        isError: false
+      });
     } catch (error) {
-      console.error("Error saving meeting:", error);
-      alert(error.response?.data?.error || "Failed to schedule meeting.");
+      console.error('Error saving meeting:', error);
+
+      setModal({
+        show: true,
+        message: error.response?.data?.error || 'Failed to schedule meeting.',
+        isError: true
+      });
     }
   };
 
   return (
     <section className="app-shell">
-      <nav className="top-navbar" aria-label="Main Navigation">
-        <header className="navbar-content">
-          <button onClick={handleGoBack} className="back-link-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px' }}>
-            <span className="back-icon" aria-hidden="true">←</span>
-          </button>
-        </header>
-      </nav>
+      {modal.show && (
+        <aside className="modal-overlay">
+          <dialog open className="modal-content">
+            <header className="modal-header">
+              <strong className={`modal-icon ${modal.isError ? 'icon-error' : 'icon-success'}`}>
+                {modal.isError ? '⚠️' : '✅'}
+              </strong>
+              <h3>{modal.isError ? 'Notice' : 'Success!'}</h3>
+            </header>
+
+            <article className="modal-body">
+              <output className="modal-message">{modal.message}</output>
+            </article>
+
+            <footer className="modal-actions">
+              <button type="button" className="modal-btn" onClick={closeModal}>
+                OK
+              </button>
+            </footer>
+          </dialog>
+        </aside>
+      )}
 
       <main className="schedule-page">
         <article className="form-card">
           <header className="form-header">
             <figure className="header-icon-container">
-              <span className="header-icon" role="img" aria-label="Calendar">📅</span>
+              <strong className="header-icon">📅</strong>
             </figure>
+
             <hgroup>
               <h2>Schedule Meeting</h2>
-              <p>Group ID: {groupId || "General"}</p>
+              <p>
+                Group ID:{' '}
+                <address style={{ display: 'inline', fontStyle: 'normal' }}>
+                  {currentGroupId}
+                </address>
+              </p>
             </hgroup>
           </header>
 
-          <form className="meeting-form" onSubmit={handleSubmit} noValidate={false}>
-            {/* Title - Required */}
+          <form ref={formRef} className="meeting-form" onSubmit={handleSubmit} noValidate={false}>
             <section className="input-group">
-              <label htmlFor="meetingTitle">Meeting Title <mark className="required-marker">*</mark></label>
-              <input 
-                type="text" 
-                id="meetingTitle" 
-                placeholder="e.g., Project Kickoff Meeting" 
-                required 
+              <label htmlFor="meetingTitle">
+                Meeting Title <mark className="required-marker">*</mark>
+              </label>
+              <input
+                type="text"
+                id="meetingTitle"
+                placeholder="e.g., Project Kickoff Meeting"
+                required
                 value={formData.meetingTitle}
-                onChange={handleInputChange} 
+                onChange={handleInputChange}
               />
             </section>
 
             <section className="input-group">
               <label htmlFor="purpose">Purpose / Agenda (optional)</label>
-              <textarea id="purpose" rows="3" placeholder="Add description" value={formData.purpose} onChange={handleInputChange}></textarea>
+              <textarea
+                id="purpose"
+                rows="3"
+                placeholder="Add description"
+                value={formData.purpose}
+                onChange={handleInputChange}
+              />
             </section>
 
-            {/* Date and Time - Required */}
             <fieldset className="form-row">
               <section className="input-group">
-                <label htmlFor="meetingDate">Date <mark className="required-marker">*</mark></label>
-                <input 
-                  type="date" 
-                  id="meetingDate" 
-                  required 
-                  min={new Date().toISOString().split("T")[0]} // Prevents scheduling in the past
+                <label htmlFor="meetingDate">
+                  Date <mark className="required-marker">*</mark>
+                </label>
+                <input
+                  type="date"
+                  id="meetingDate"
+                  required
+                  min={new Date().toISOString().split('T')[0]}
                   value={formData.meetingDate}
                   onChange={handleInputChange}
                 />
               </section>
+
               <section className="input-group">
-                <label htmlFor="startTime">Time <mark className="required-marker">*</mark></label>
+                <label htmlFor="startTime">
+                  Time <mark className="required-marker">*</mark>
+                </label>
                 <section className="time-range-group">
-                  <input type="time" id="startTime" required value={formData.startTime} onChange={handleInputChange} />
-                  <span aria-hidden="true">to</span>
-                  <input type="time" id="endTime" required value={formData.endTime} onChange={handleInputChange} />
+                  <input
+                    type="time"
+                    id="startTime"
+                    required
+                    value={formData.startTime}
+                    onChange={handleInputChange}
+                  />
+                  <strong aria-hidden="true">to</strong>
+                  <input
+                    type="time"
+                    id="endTime"
+                    required
+                    value={formData.endTime}
+                    onChange={handleInputChange}
+                  />
                 </section>
               </section>
             </fieldset>
 
             <fieldset className="input-group">
-              <legend>Location Type <mark className="required-marker">*</mark></legend>
-              <nav className="toggle-navigation" role="group">
-                <button type="button" className={`toggle-btn ${locationType === 'online' ? 'active' : ''}`} onClick={() => setLocationType('online')}>Online</button>
-                <button type="button" className={`toggle-btn ${locationType === 'in-person' ? 'active' : ''}`} onClick={() => setLocationType('in-person')}>In-person</button>
+              <legend>
+                Location Type <mark className="required-marker">*</mark>
+              </legend>
+
+              <nav className="toggle-navigation">
+                <button
+                  type="button"
+                  className={`toggle-btn ${locationType === 'online' ? 'active' : ''}`}
+                  onClick={() => setLocationType('online')}
+                >
+                  Online
+                </button>
+
+                <button
+                  type="button"
+                  className={`toggle-btn ${locationType === 'in-person' ? 'active' : ''}`}
+                  onClick={() => setLocationType('in-person')}
+                >
+                  In-person
+                </button>
               </nav>
             </fieldset>
 
             {locationType === 'online' ? (
-              <>
+              <section className="online-fields">
                 <section className="input-group">
                   <label htmlFor="platform">Meeting Platform</label>
                   <select id="platform" value={platform} onChange={(e) => setPlatform(e.target.value)}>
@@ -170,23 +315,65 @@ const ScheduleMeeting = () => {
                   </select>
                 </section>
 
+                <section className="input-group">
+                  <label htmlFor="meetingLink">
+                    Meeting Link {platform !== 'others' && <mark className="required-marker">*</mark>}
+                  </label>
+                  <input
+                    type="url"
+                    id="meetingLink"
+                    placeholder="Paste your Meeting link here"
+                    required={platform !== 'others'}
+                    value={formData.meetingLink}
+                    onChange={handleInputChange}
+                  />
+                </section>
+
                 {platform === 'others' && (
                   <section className="input-group">
-                    <label htmlFor="otherPlatform">Specify Platform <mark className="required-marker">*</mark></label>
-                    <input type="text" id="otherPlatform" placeholder="Platform name" required value={formData.otherPlatform} onChange={handleInputChange} />
+                    <label htmlFor="otherPlatform">
+                      Specify Platform <mark className="required-marker">*</mark>
+                    </label>
+                    <input
+                      type="text"
+                      id="otherPlatform"
+                      placeholder="Platform name"
+                      required
+                      value={formData.otherPlatform}
+                      onChange={handleInputChange}
+                    />
                   </section>
                 )}
-              </>
+              </section>
             ) : (
               <section className="input-group">
-                <label htmlFor="physicalLocation">Meeting Room / Address <mark className="required-marker">*</mark></label>
-                <input type="text" id="physicalLocation" placeholder="Address" required value={formData.physicalLocation} onChange={handleInputChange} />
+                <label htmlFor="physicalLocation">
+                  Meeting Room / Address <mark className="required-marker">*</mark>
+                </label>
+                <input
+                  type="text"
+                  id="physicalLocation"
+                  placeholder="Address"
+                  required
+                  value={formData.physicalLocation}
+                  onChange={handleInputChange}
+                />
               </section>
             )}
 
             <footer className="form-footer">
-              <button type="button" onClick={handleGoBack} className="cancel-link" style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}>Cancel</button>
-              <button type="submit" className="submit-btn">Schedule Meeting</button>
+              <button
+                type="button"
+                onClick={handleGoBack}
+                className="cancel-link"
+                style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}
+              >
+                Cancel
+              </button>
+
+              <button type="submit" className="submit-btn">
+                Schedule Meeting
+              </button>
             </footer>
           </form>
         </article>
