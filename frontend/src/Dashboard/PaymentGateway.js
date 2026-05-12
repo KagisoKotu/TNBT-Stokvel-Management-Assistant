@@ -44,6 +44,16 @@ const CheckoutForm = (props) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount }),
       });
+
+      const data = await response.json();
+
+      // STOP AND CHECK: Did the backend actually give us the secret, or did it throw an error?
+      if (!response.ok || !data.clientSecret) {
+        console.error("🚨 BACKEND REJECTED PAYMENT INTENT:", data);
+        alert(`Backend Error: ${data.message || data.error || 'Check the console'}`);
+        setProcessing(false);
+        return; // Stop the function so Stripe doesn't crash!
+      }
       
       const { clientSecret } = await response.json();
 
