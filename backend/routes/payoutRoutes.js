@@ -24,7 +24,12 @@ const requireTreasurer = (req, res, next) => {
 // POST /api/payouts
 router.post('/', requireTreasurer, schedulePayout);
 
-router.put('/:id/status', requireTreasurer, updatePayoutStatus); //PUT /api/payouts/:id/status (Update Status)
+// PUT /api/payouts/:id/status (Update Status)
+router.put('/:id/status', requireTreasurer, updatePayoutStatus); 
+
+// GET /api/payouts/scheduled (For the Treasurer Dashboard)
+// Added the bouncer here so only Treasurers can see the full scheduled list
+router.get('/scheduled', requireTreasurer, getScheduledPayouts);
 
 // my new routes:
 router.get('/:groupName/next', requireTreasurer, getNextScheduled); 
