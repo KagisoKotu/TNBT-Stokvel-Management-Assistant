@@ -110,7 +110,9 @@ const PaymentTracking = ({ groupId }) => {
         setLoading(true);
         
         
-        const baseUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+        const baseUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:5000/api'
+        : (process.env.REACT_APP_API_URL || 'https://tnbt-stokvel-management-assistant.onrender.com/api');
         const response = await fetch(`${baseUrl}/groups/${groupId}/contributions`);
         
         if (!response.ok) throw new Error('Failed to load group database ledger');
