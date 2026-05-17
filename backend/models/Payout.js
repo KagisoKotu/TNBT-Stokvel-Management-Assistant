@@ -4,7 +4,10 @@ const mongoose = require('mongoose');
 const payoutSchema = new mongoose.Schema({
   groupName: { 
     type: String, 
-    required: true 
+    required: false // Made false so frontend can use groupId instead if needed
+  },
+  groupId: { 
+    type: String // Added this because frontend sends groupId
   },
   userId: { 
     type: String, 
@@ -23,9 +26,16 @@ const payoutSchema = new mongoose.Schema({
     type: Date, 
     required: true 
   },
+
+  // --- NEW FIELDS ADDED ---
+  method: { type: String },    // 'bank' or 'cash'
+  reference: { type: String }, // EFT ref
+  notes: { type: String },     // Extra context
+
   status: { 
     type: String, 
-    enum: ['Scheduled', 'Paid', 'Cancelled'],
+    // Combined Gomolemo's statuses with my new statuses!
+    enum: ['Scheduled', 'pending', 'Paid', 'failed', 'Cancelled'],
     default: 'Scheduled' 
   }
 }, { timestamps: true });
