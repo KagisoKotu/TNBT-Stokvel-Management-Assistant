@@ -3,7 +3,8 @@ const router = express.Router();
 const { schedulePayout, updatePayoutStatus,
     getNextScheduled,      // <-- Added this
     getPendingPayouts,     // <-- Added this
-    initiatePayout         // <-- Added this
+    initiatePayout,         // <-- Added this
+    getScheduledPayouts
 } = require('../controllers/payoutController');
 
 // --- THE BOUNCER (Security Middleware) ---
