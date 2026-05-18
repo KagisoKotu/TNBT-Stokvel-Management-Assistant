@@ -1,45 +1,45 @@
-# Scrum 2
+# Scrum 1
 
 # Objectives
 
-1. Allocate user stories to team members
-2. Assign responsibilities for each task
-3. Establish deadlines and expectations
+1. Discuss and select Sprint 4 user stories
+2. Justify inclusion of each user story
+3. Prioritize stories for the sprint
 
 ---
 
 ## Meet up with Client
 
-The meeting took place with all team members present. The client was not present at this internal meeting. Following the finalization of Sprint 4 user stories, the team proceeded to allocate each story to a specific team member to ensure clear ownership and accountability.
+The team convened to discuss Sprint 4 user stories. All team members were present. The client was not present at this internal meeting. The team reviewed feedback from Sprint 3 and identified areas that needed further enhancement before selecting new user stories for Sprint 4.
 
-**Allocation Process:**
+**Sprint 4 Context:**
 
-Each team member selected a user story to work on based on their expertise and availability. Members will be responsible for both frontend and backend implementation of their chosen user story where applicable.
+The team agreed that Sprint 4 would focus on adding value by introducing features that improve financial tracking, contribution management, payout processing, and data analytics based on previous feedback from both the client and team retrospectives.
 
 ---
 
 ## Choose Specifications
 
-**Task Allocation:**
+**User Stories Proposed for Sprint 4:**
 
-The following user stories were assigned to team members:
+The team discussed the following user stories and justified why each should be included:
 
-| # | User Story | Assigned To |
-|---|------------|-------------|
-| 1 | As a Member, I want to view contribution compliance reports over time so that I can monitor my contribution consistency and payment history | Kagiso |
-| 2 | As a Member, I want to view payout history and upcoming payout projections so that I can track previous payouts and prepare for future ones | Nkateko |
-| 3 | As a Member, I want a customizable analytics dashboard with filtering and export options (CSV/PDF) so that I can personalize, analyze, and keep records of my financial information | Gomolemo |
-| 4 | As a Treasurer, I want to initiate payout disbursements so that member payouts can be processed and recorded digitally | Thabiso |
-| 5 | As a Treasurer, I want to confirm/flag missed payments so that I can accurately track who has paid and ensure outstanding payments are identified and followed up on | Sikhona |
-| 6 | As a Member, I want to receive payouts directly into my bank account so that I can access my funds conveniently and securely | Liso |
+| # | Role | User Story | Justification |
+|---|------|------------|----------------|
+| 1 | Member | As a Member, I want to view contribution compliance reports over time so that I can monitor my contribution consistency and payment history | Essential for member self-awareness and financial accountability |
+| 2 | Member | As a Member, I want to view payout history and upcoming payout projections so that I can track previous payouts and prepare for future ones | Improves financial planning and transparency for members |
+| 3 | Member | As a Member, I want a customizable analytics dashboard with filtering and export options (CSV/PDF) so that I can personalize, analyze, and keep records of my financial information | Provides advanced data analysis and record-keeping capabilities |
+| 4 | Treasurer | As a Treasurer, I want to initiate payout disbursements so that member payouts can be processed and recorded digitally | Digitizes payout process and creates digital records |
+| 5 | Treasurer | As a Treasurer, I want to confirm/flag missed payments so that I can accurately track who has paid and ensure outstanding payments are identified and followed up on | Critical for accurate contribution tracking and follow-up |
+| 6 | Member | As a Member, I want to receive payouts directly into my bank account so that I can access my funds conveniently and securely | Enhances user convenience and security for receiving funds |
 
-**Expectations & Deadlines:**
+**Selection Outcome:**
 
-| Expectation | Description |
-|-------------|-------------|
-| Ownership | Each member is responsible for their assigned user story from implementation to testing |
-| Integration | Members must ensure their feature integrates smoothly with existing system components |
-| Deadline | All user stories must be completed by the end of Sprint 4 |
+All 6 user stories were agreed upon by the team. The team noted that these stories collectively address:
+- Financial transparency
+- Member self-service
+- Treasurer workflow efficiency
+- Data export and analytics capabilities
 
 ---
 
@@ -47,12 +47,12 @@ The following user stories were assigned to team members:
 
 **Items added to backlog for Sprint 4:**
 
-- Kagiso: Contribution compliance reports
-- Nkateko: Payout history and projections
-- Gomolemo: Customizable analytics dashboard with export
-- Thabiso: Payout disbursement initiation
-- Sikhona: Missed payment confirmation/flagging
-- Liso: Direct bank account payouts
+- Contribution compliance reports (Member)
+- Payout history and projections (Member)
+- Customizable analytics dashboard with CSV/PDF export (Member)
+- Payout disbursement initiation (Treasurer)
+- Missed payment confirmation/flagging (Treasurer)
+- Direct bank account payouts (Member)
 
 ## Evidence
 
