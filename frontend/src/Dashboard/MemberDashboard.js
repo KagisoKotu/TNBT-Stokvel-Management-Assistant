@@ -11,6 +11,7 @@ import PaymentPreview from './PaymentPreview';
 import PaymentGateway from './PaymentGateway'; 
 import PaymentSuccess from './PaymentSuccess';
 import PaymentHistory from '../components/PaymentHistory';
+import MemberAnalytics from '../components/MemberAnalytics'; // Our new component!
 
 const MemberDashboard = ({ onLogout = () => {} }) => {
   const navigate = useNavigate();
@@ -217,6 +218,13 @@ const MemberDashboard = ({ onLogout = () => {} }) => {
             <section className="welcome-hero">
               <h2>Welcome back, {sessionUser?.name || sessionUser?.firstName || 'Member'}</h2>
               <p>You are viewing details for the <strong>{groupName}</strong> group.</p>
+              
+              {/* Added a subtle divider for visual flow */}
+              <hr style={{ margin: '30px 0', border: '1px solid #eee' }} />
+
+              {/* Your shiny new analytics dashboard right here! */}
+              <MemberAnalytics />
+
             </section>
           )}
 
