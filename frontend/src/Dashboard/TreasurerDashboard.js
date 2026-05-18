@@ -4,21 +4,25 @@ import {
   LayoutDashboard, Users, CreditCard, 
   CalendarDays, Mic2, ChevronDown, UserCircle, 
   LogOut, Bell, TrendingUp, Clock, AlertCircle,
-  FileText, ClipboardList, ChevronLeft, ChevronRight
-} from 'lucide-react'; 
+  FileText, ClipboardList, ChevronLeft, ChevronRight,CheckSquare} from 'lucide-react'; 
 
 // Components
 import Profile from '../components/Profile';
 import ScheduleMeeting from './ScheduleMeeting';
 import PostAgendas from './PostAgendas';
 import RecordMinutes from './RecordMinutes';
-import ViewContributions from './ViewContributions'; 
-
+import ViewContributions from './ViewContributions';
+import SchedulePayout from '../components/SchedulePayout';
+import PaymentTracking from './PaymentTracking'
 import './TreasurerDashboard.css';
+
+import { InitiatePayout } from './InitiatePayout';
 
 const TreasurerDashboard = ({ onLogout = () => {} }) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
   
   // Navigation State
   const groupName = location.state?.groupName || "Group Dashboard";
@@ -29,23 +33,56 @@ const TreasurerDashboard = ({ onLogout = () => {} }) => {
   const [isMeetingsOpen, setIsMeetingsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showProfile, setShowProfile] = useState(false);
+  const [isFinancesOpen, setIsFinancesOpen] = useState(false);
   
   // Data State
   const [meetings, setMeetings] = useState([]);
+  const [members, setMembers] = useState([]);
   const [viewDate, setViewDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (groupId) {
-      // Logic to load meetings from localStorage (similar to your previous working version)
-      const savedMeetings = JSON.parse(localStorage.getItem('stokvel_meetings') || '[]');
-      const currentGroupMeetings = savedMeetings.filter(m => m.groupId === groupId);
-      setMeetings(currentGroupMeetings);
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
+    const loadDashboardData = async () => {
+      if (groupId) {
+        // 1. Existing logic to load meetings from localStorage
+        const savedMeetings = JSON.parse(localStorage.getItem('stokvel_meetings') || '[]');
+        const currentGroupMeetings = savedMeetings.filter(m => m.groupId === groupId);
+        setMeetings(currentGroupMeetings);
+
+        // 2. New fetch logic to get your group members from the server
+        // 2. Fetch members using the correct 'managegroup' route
+        try {
+          const token = localStorage.getItem('token');
+          
+          // Changed from /groups/ to /managegroup/ and added /members back
+          const response = await fetch(`${apiUrl}/managegroup/${groupId}/members`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            
+            // Depending on how your backend sends it back, it might be the array itself
+            // or nested inside an object (e.g., { members: [...] })
+            const groupMembers = Array.isArray(data) ? data : (data.members || []);
+            setMembers(groupMembers);
+            
+            console.log("Successfully fetched members:", groupMembers); // Quick check!
+          } else {
+             console.log("Failed to fetch group. Status:", response.status);
+          }
+        } catch (err) {
+          console.error("Error fetching group members in dashboard:", err);
+        }
+
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
   }, [groupId]);
 
   // Calendar Helpers
@@ -126,6 +163,9 @@ const TreasurerDashboard = ({ onLogout = () => {} }) => {
       case 'post-agenda': return <PostAgendas />;
       case 'record-minutes': return <RecordMinutes />;
       case 'view-contributions': return <ViewContributions />;
+      case 'payment-tracking': return <PaymentTracking groupId={groupId} />;
+      case 'schedule-payout': return <SchedulePayout />; //render this if activeTab is schedule payout
+      case 'initiate-payout': return <InitiatePayout members={members} groupId={groupId} groupName={groupName} />;
       case 'dashboard':
       default: return renderDashboardHome();
     }
@@ -179,6 +219,45 @@ const TreasurerDashboard = ({ onLogout = () => {} }) => {
                   <li>
                     <button onClick={() => handleTabChange('view-contributions')} className={`submenu-btn ${activeTab === 'view-contributions' ? 'active' : ''}`}>
                       <Users size={16} /><label>Contributions</label>
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={() => handleTabChange('payment-tracking')} className={`submenu-btn ${activeTab === 'payment-tracking' ? 'active' : ''}`}>
+                      <CheckSquare size={16} /><label>Payment Tracking</label>
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
+
+            <li>
+              <button 
+                onClick={() => setIsFinancesOpen(!isFinancesOpen)} 
+                className="nav-item dropdown-trigger"
+                aria-expanded={isFinancesOpen}
+              >
+                <CreditCard size={20} aria-hidden="true" /> 
+                <label>Finances</label>
+                <ChevronDown size={16} className={isFinancesOpen ? "rotate" : ""} aria-hidden="true" />
+              </button>
+              
+              {isFinancesOpen && (
+                <ul className="submenu" aria-label="Finances Submenu">
+                  <li>
+                    <button 
+                      onClick={() => handleTabChange('schedule-payout')} 
+                      className={`submenu-btn ${activeTab === 'schedule-payout' ? 'active' : ''}`}
+                    >
+                      <CreditCard size={16} aria-hidden="true" />
+                      <label>Schedule Payout</label>
+                    </button>
+                  </li>
+                  <li>
+                    <button 
+                      onClick={() => handleTabChange('initiate-payout')} 
+                      className={`submenu-btn ${activeTab === 'initiate-payout' ? 'active' : ''}`}
+                    >
+                      💸 Initiate Payout
                     </button>
                   </li>
                 </ul>

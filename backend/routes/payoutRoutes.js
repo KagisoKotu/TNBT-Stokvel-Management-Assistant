@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { schedulePayout, updatePayoutStatus} = require('../controllers/payoutController');
+const { schedulePayout, updatePayoutStatus,
+    getNextScheduled,      // <-- Added this
+    getPendingPayouts,     // <-- Added this
+    initiatePayout,         // <-- Added this
+    getScheduledPayouts    // Gomolemo's original controller function, still here if we need it
+} = require('../controllers/payoutController');
 
 // --- THE BOUNCER (Security Middleware) ---
 const requireTreasurer = (req, res, next) => {
@@ -16,10 +21,20 @@ const requireTreasurer = (req, res, next) => {
     // Otherwise, open the door and let the controller run
     next(); 
 };
-
+// Gomolemo's routes:
 // POST /api/payouts
 router.post('/', requireTreasurer, schedulePayout);
 
-router.put('/:id/status', requireTreasurer, updatePayoutStatus); //PUT /api/payouts/:id/status (Update Status)
+// PUT /api/payouts/:id/status (Update Status)
+router.put('/:id/status', requireTreasurer, updatePayoutStatus); 
+
+// GET /api/payouts/scheduled (For the Treasurer Dashboard)
+// Added the bouncer here so only Treasurers can see the full scheduled list
+router.get('/scheduled', requireTreasurer, getScheduledPayouts);
+
+// my new routes:
+router.get('/:groupName/next', requireTreasurer, getNextScheduled); 
+router.get('/:groupName/pending', requireTreasurer, getPendingPayouts);
+router.post('/initiate', requireTreasurer, initiatePayout);
 
 module.exports = router;

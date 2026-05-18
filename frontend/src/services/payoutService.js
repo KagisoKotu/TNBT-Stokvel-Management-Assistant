@@ -1,8 +1,10 @@
-const API_URL = 'http://localhost:5000/api/payouts'; // Make sure this matches your Express port!
+// Grab the base URL from the environment, or fall back to localhost
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 export const schedulePayout = async (payoutData) => {
     try {
-        const response = await fetch(API_URL, {
+        // Use backticks to dynamically insert the URL so it points to Render when live!
+        const response = await fetch(`${API_BASE_URL}/payouts`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
