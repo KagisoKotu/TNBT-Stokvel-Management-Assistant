@@ -134,7 +134,7 @@ const MemberAnalytics = () => {
                     onClick={handleExportCSV} 
                     style={{ padding: '10px 15px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
-                    📥 Download CSV
+                    Download CSV
                 </button>
                 
                 <button 
@@ -142,7 +142,7 @@ const MemberAnalytics = () => {
                     onClick={handleExportPDF} 
                     style={{ padding: '10px 15px', cursor: 'pointer', fontWeight: 'bold' }}
                 >
-                    📄 Download PDF
+                    Download PDF
                 </button>
             </menu>
 
