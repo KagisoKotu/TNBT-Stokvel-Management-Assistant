@@ -11,7 +11,7 @@ import Profile from '../components/Profile';
 import ScheduleMeeting from './ScheduleMeeting';
 import PostAgendas from './PostAgendas';
 import RecordMinutes from './RecordMinutes';
-import ViewContributions from './ViewContributions';
+import ContributionTable from './ContributionTable';
 import SchedulePayout from '../components/SchedulePayout';
 import PaymentTracking from './PaymentTracking'
 import './TreasurerDashboard.css';

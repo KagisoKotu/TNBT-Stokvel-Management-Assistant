@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import './MemberAnalytics.css'; 
+import 'jspdf-autotable'; 
 
 const MemberAnalytics = () => {
     const [summary, setSummary] = useState({ totalContributions: 0, totalPayouts: 0 });
